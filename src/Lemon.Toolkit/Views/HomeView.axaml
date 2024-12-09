@@ -11,15 +11,15 @@
     <Grid>
         <ListBox
             Name="listbox"
-            ItemsSource="{Binding Modules}"
-            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+            ItemsSource="{Binding Views}"
+            SelectedItem="{Binding SelectedView, Mode=TwoWay}"
             SelectionMode="Single">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Alias}" />
+                    <TextBlock Text="{Binding ViewClassName}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
-            <Interaction.Behaviors>
+			<Interaction.Behaviors>
                 <behaviors:ClearSelectionBehavior GoClear="{Binding GoClearSelection}" />
             </Interaction.Behaviors>
         </ListBox>

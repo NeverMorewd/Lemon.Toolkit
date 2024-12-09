@@ -5,13 +5,10 @@
     xmlns:local="using:Lemon.Toolkit"
     xmlns:semi="https://irihi.tech/semi"
     RequestedThemeVariant="Dark">
-    <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
-
     <Application.DataTemplates />
 
     <Application.Styles>
-        <!--  You can still reference in old way.  -->
-        <!-- <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml" /> -->
         <semi:SemiTheme Locale="zh-cn" />
     </Application.Styles>
+    <Application.Resources />
 </Application>

@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Xaml.Interactivity;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Lemon.Toolkit.Behaviors
 {
@@ -27,10 +26,13 @@ namespace Lemon.Toolkit.Behaviors
             if (newValue)
             {
                 _listBox?.UnselectAll();
+                if (_listBox?.SelectedItem != null)
+                {
+                    _listBox.SelectedItem = null;
+                }
             }
         }
 
-        [RequiresUnreferencedCode("OnAttached")]
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -44,6 +46,8 @@ namespace Lemon.Toolkit.Behaviors
 
         protected override void OnDetaching()
         {
+            /// switch from tabitem will raise unloading
+            OnGoClearPropertyChanged(true);
             base.OnDetaching();
             _disposable?.Dispose();
         }

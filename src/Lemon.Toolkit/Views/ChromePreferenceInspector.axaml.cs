@@ -3,9 +3,9 @@ using Lemon.ModuleNavigation.Abstracts;
 
 namespace Lemon.Toolkit.Views;
 
-public partial class FileSimulateView : UserControl, IView
+public partial class ChromePreferenceInspector : UserControl, IView
 {
-    public FileSimulateView()
+    public ChromePreferenceInspector()
     {
         InitializeComponent();
     }

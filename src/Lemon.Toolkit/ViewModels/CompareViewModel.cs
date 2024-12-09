@@ -3,7 +3,7 @@ using Lemon.Toolkit.Services;
 
 namespace Lemon.Toolkit.ViewModels
 {
-    public class CompareViewModel : ViewModelBase
+    public class CompareViewModel : NavigationViewModelBase
     {
         public CompareViewModel(ITopLevelProvider topLevelProvider)
         {

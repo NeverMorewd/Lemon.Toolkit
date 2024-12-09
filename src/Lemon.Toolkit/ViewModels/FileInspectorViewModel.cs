@@ -20,19 +20,22 @@ using Notification = Avalonia.Controls.Notifications.Notification;
 namespace Lemon.Toolkit.ViewModels
 {
     [RequiresUnreferencedCode("")]
-    public class FileInspectorViewModel: ViewModelBase
+    public class FileInspectorViewModel: NavigationViewModelBase
     {
         private readonly CompositeDisposable? _disposables;
         private readonly ITopLevelProvider _topLevelProvider;
         private readonly IObserver<ShellParamModel> _shellService;
+        private readonly FileInspectorService _fileInspectorService;
         private readonly ILogger _logger;
         public FileInspectorViewModel(ITopLevelProvider topLevelProvider, 
             IObserver<ShellParamModel> shellService,
+            FileInspectorService fileInspectorService,
             ILogger<FileInspectorViewModel> logger) 
         {
             _logger = logger;
             _topLevelProvider = topLevelProvider;
             _shellService = shellService;
+            _fileInspectorService = fileInspectorService;
             CopyCommand = ReactiveCommand.CreateFromTask<object>(async (obj) =>
             {
                 string? content = null;
@@ -77,7 +80,7 @@ namespace Lemon.Toolkit.ViewModels
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Do(f => { _shellService.OnNext(new ShellParamModel { IsProcessing = true }); })
                 .ObserveOn(RxApp.TaskpoolScheduler)
-                .Select(f => (ComputeHash(f, MD5.Create()), ComputeHash(f, SHA256.Create()), ComputeFileSize(f)))
+                .Select(f => (_fileInspectorService.ComputeHash(f, MD5.Create()), _fileInspectorService.ComputeHash(f, SHA256.Create()), _fileInspectorService.ComputeFileSize(f)))
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(hashes =>
                 {
@@ -121,24 +124,6 @@ namespace Lemon.Toolkit.ViewModels
         public ReactiveCommand<object, Unit> CopyCommand
         {
             get;
-        }
-
-        static string ComputeHash(string filePath, HashAlgorithm hashAlgorithm)
-        {
-            using (hashAlgorithm)
-            using (var stream = File.OpenRead(filePath))
-            {
-                byte[] hashBytes = hashAlgorithm.ComputeHash(stream);
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-            }
-        }
-        static double ComputeFileSize(string filePath)
-        {
-            FileInfo fileInfo = new(filePath);
-            long fileSizeInBytes = fileInfo.Length;
-            double fileSizeInMB = fileSizeInBytes / (1024.0 * 1024.0);
-            Console.WriteLine($"文件大小: {fileSizeInMB} MB");
-            return Math.Round(fileSizeInMB, 2);
         }
     }
 }

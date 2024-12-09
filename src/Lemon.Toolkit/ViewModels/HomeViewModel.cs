@@ -1,55 +1,48 @@
-﻿using Lemon.ModuleNavigation;
+﻿using DynamicData.Binding;
 using Lemon.ModuleNavigation.Abstracts;
+using Lemon.ModuleNavigation.Core;
 using Lemon.Toolkit.Domains;
-using Lemon.Toolkit.Services;
 using Microsoft.Extensions.Logging;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reactive.Linq;
 
 namespace Lemon.Toolkit.ViewModels
 {
-    [RequiresUnreferencedCode("")]
-    public class HomeViewModel:ViewModelBase
+    public class HomeViewModel : NavigationViewModelBase
     {
         private readonly ITopLevelProvider _topLevelProvider;
-        private readonly NavigationService _navigationService;
+        private readonly INavigationService _navigationService;
         private readonly ILogger _logger;
         public HomeViewModel(ITopLevelProvider topLevelProvider,
-            IEnumerable<IModule> modules,
-            NavigationService navigationService,
-            ILogger<HomeViewModel> logger) 
+            IRegionManager regionManager,
+            INavigationService navigationService,
+            ILogger<HomeViewModel> logger)
         {
             _navigationService = navigationService;
             _topLevelProvider = topLevelProvider;
             _logger = logger;
-            Modules = new ObservableCollection<IModule>(modules.Where(m=>m.ViewModelType != typeof(HomeViewModel)));
-            this.WhenAnyValue(x => x.SelectedItem)
-                .WhereNotNull()
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(c =>
+            Views = ViewManager.ViewDiscriptions.Values.Where(v=>v.ViewModelType != typeof(HomeViewModel));
+            using var scope = _logger.BeginScope("Views");
+            _logger.LogDebug($"{string.Join(';', Views.Select(v => v.ViewKey))}");
+
+            this.WhenPropertyChanged(t => t.SelectedView)
+                .Subscribe((newValue) =>
                 {
-                    _logger.LogDebug($"navigate to {c.Key}");
-                    _navigationService.NavigateTo(c);
-                    GoClearSelection = true;
+                    if (newValue.Value.HasValue && !string.IsNullOrEmpty(newValue.Value.Value.ViewKey))
+                    {
+                        _navigationService.RequestViewNavigation("MainTabRegion", newValue.Value.Value.ViewKey, true);
+                        GoClearSelection = true;
+                        SelectedView = null;
+                    }
                 });
-        }
-        public ObservableCollection<IModule> Modules
-        {
-            get;
-            set;
+
         }
 
-        [Reactive]
-        public IModule? SelectedItem
+        public IEnumerable<ViewDiscription> Views
         {
             get;
-            set;
         }
 
         [Reactive]
@@ -58,5 +51,11 @@ namespace Lemon.Toolkit.ViewModels
             get;
             set;
         } = false;
+        [Reactive]
+        public ViewDiscription? SelectedView
+        {
+            get;
+            set;
+        }
     }
 }

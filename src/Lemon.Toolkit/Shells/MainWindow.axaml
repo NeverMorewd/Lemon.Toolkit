@@ -19,7 +19,6 @@
     ExtendClientAreaTitleBarHeightHint="40"
     ExtendClientAreaToDecorationsHint="True"
     Icon="avares://Lemon.Toolkit/Assets/lemon-50.png"
-    SizeToContent="WidthAndHeight"
     mc:Ignorable="d">
 
     <Window.Styles>
@@ -67,42 +66,26 @@
                 Text="Lemon.Toolkit" />
         </StackPanel>
 
-        <lm:NTabContainer
+        <TabControl
             Name="tab"
             Grid.Row="1"
+			lm:NavigationExtension.RegionName="MainTabRegion"
             Margin="8"
             Padding="20,0,0,0"
             HorizontalAlignment="Stretch"
-            NavigationContext="{Binding NavigationContext}"
             TabStripPlacement="Left"
             Theme="{DynamicResource NavigationTab}">
-            <lm:NTabContainer.ItemTemplate>
+			<TabControl.ItemTemplate>
                 <DataTemplate>
                     <Grid
                         Width="200"
                         Height="30"
                         ColumnDefinitions="*,30">
-                        <TextBlock VerticalAlignment="Center" Text="{Binding Alias}" />
-                        <Button
-                            Grid.Column="1"
-                            Width="30"
-                            Height="30"
-                            Padding="-2"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            lm:NTabContainerBehaviors.CanUnload="{Binding CanUnload}"
-                            Content="X"
-                            FontSize="11" />
+                        <TextBlock VerticalAlignment="Center" Text="{Binding}" />
                     </Grid>
                 </DataTemplate>
-            </lm:NTabContainer.ItemTemplate>
-            <lm:NTabContainer.ContentTemplate>
-                <DataTemplate>
-                    <!-- <ContentControl ContentTemplate="{Binding ViewTemplate}" /> -->
-                    <ContentControl Content="{Binding View}" />
-                </DataTemplate>
-            </lm:NTabContainer.ContentTemplate>
-        </lm:NTabContainer>
+            </TabControl.ItemTemplate>
+        </TabControl>
         <Expander
             Grid.Row="2"
             Margin="0,0,0,10"

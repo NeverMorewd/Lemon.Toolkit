@@ -1,7 +1,6 @@
 ﻿using Avalonia.Controls.Notifications;
 using Avalonia.Media;
 using DynamicData;
-using Lemon.ModuleNavigation;
 using Lemon.ModuleNavigation.Abstracts;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -21,7 +19,7 @@ using Notification = Avalonia.Controls.Notifications.Notification;
 
 namespace Lemon.Toolkit.Shells
 {
-    public class MainWindowViewModel : ViewModelBase,INavigationContextProvider, IDisposable
+    public class MainWindowViewModel : NavigationViewModelBase, IServiceAware, IDisposable
     {
         private const int MaxOutputCount = 200;
         private readonly CompositeDisposable _disposables;
@@ -31,18 +29,21 @@ namespace Lemon.Toolkit.Shells
         private readonly ILogger _logger;
         private readonly SourceCache<ConsoleTextModel, Guid> _outputsCache = new(x => x.Id);
         private readonly ReadOnlyObservableCollection<ConsoleTextModel> _outputs;
+        private readonly INavigationService _navigationService;
         public MainWindowViewModel(ITopLevelProvider topLevelProvder,
             ConsoleService consoleService,
             IObservable<ShellParamModel> shellService,
-            IEnumerable<IModule> modules,
-            NavigationContext navigationContext,
+            INavigationService navigationService,
+            IServiceProvider serviceProvider,
             ILogger<MainWindowViewModel> logger)
         {
             _logger = logger;
             _topLevelProvider = topLevelProvder;
             _consoleService = consoleService;
             _shellService = shellService;
-            NavigationContext = navigationContext;
+            _navigationService = navigationService;
+            ServiceProvider = serviceProvider;
+            _navigationService.RequestViewNavigation("MainTabRegion", nameof(HomeView));
 
             #region Outputs Cache
             var cacheCleanup = _outputsCache.Connect()
@@ -71,13 +72,13 @@ namespace Lemon.Toolkit.Shells
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(outPut =>
                 {
-                   _outputsCache.AddOrUpdate(new ConsoleTextModel($"{outPut}", brush:new SolidColorBrush(Colors.Red)));
+                    _outputsCache.AddOrUpdate(new ConsoleTextModel($"{outPut}", brush: new SolidColorBrush(Colors.Red)));
                 });
 
             #endregion
             _shellService
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(param => 
+                .Subscribe(param =>
                 {
                     IsProcessing = param.IsProcessing;
                 });
@@ -85,8 +86,8 @@ namespace Lemon.Toolkit.Shells
             CopyOutputCommand = ReactiveCommand.CreateFromTask(async () =>
             {
                 if (_outputs.Count < 1)
-                { 
-                    return; 
+                {
+                    return;
                 }
                 var texts = _outputs.Select(o => o.Text);
                 var outputString = string.Join(Environment.NewLine, texts);
@@ -95,7 +96,7 @@ namespace Lemon.Toolkit.Shells
             });
 
             var valueChangedCleanup = this.WhenAnyValue(x => x.ConsoleIsExpanded)
-                .Subscribe(c=>
+                .Subscribe(c =>
                 {
                     if (c)
                     {
@@ -103,10 +104,10 @@ namespace Lemon.Toolkit.Shells
                     }
                 });
 
-            _disposables = new(cacheCleanup, 
-                cacheCountCleanup, 
-                consoleOutputCleanup, 
-                valueChangedCleanup, 
+            _disposables = new(cacheCleanup,
+                cacheCountCleanup,
+                consoleOutputCleanup,
+                valueChangedCleanup,
                 consoleErrorCleanup);
 
         }
@@ -148,7 +149,7 @@ namespace Lemon.Toolkit.Shells
             get;
         }
 
-        public NavigationContext NavigationContext
+        public IServiceProvider ServiceProvider
         {
             get;
         }

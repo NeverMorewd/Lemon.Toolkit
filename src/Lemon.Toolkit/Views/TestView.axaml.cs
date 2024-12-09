@@ -9,9 +9,4 @@ public partial class TestView : UserControl, IView
     {
         InitializeComponent();
     }
-
-    public void SetDataContext(IViewModel viewModel)
-    {
-        DataContext = viewModel;
-    }
 }
