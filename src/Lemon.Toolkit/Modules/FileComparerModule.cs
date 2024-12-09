@@ -1,5 +1,4 @@
-﻿using Lemon.ModuleNavigation;
-using Lemon.ModuleNavigation.Avaloniaui;
+﻿using Lemon.ModuleNavigation.Avaloniaui;
 using Lemon.Toolkit.ViewModels;
 using Lemon.Toolkit.Views;
 using System;
@@ -15,5 +14,6 @@ namespace Lemon.Toolkit.Modules
 
         public override bool LoadOnDemand => true;
         public override string? Alias { get => Key; }
+        public override bool AllowMultiple => true;
     }
 }
