@@ -1,62 +1,49 @@
-﻿using Lemon.ModuleNavigation;
+﻿using DynamicData.Binding;
 using Lemon.ModuleNavigation.Abstracts;
+using Lemon.ModuleNavigation.Core;
 using Lemon.Toolkit.Domains;
-using Lemon.Toolkit.Services;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reactive.Linq;
+using System.Reactive;
 
 namespace Lemon.Toolkit.ViewModels
 {
-    [RequiresUnreferencedCode("")]
-    public class HomeViewModel:ViewModelBase
+    public class HomeViewModel : NavigationViewModelBase
     {
         private readonly ITopLevelProvider _topLevelProvider;
-        private readonly NavigationService _navigationService;
+        private readonly INavigationService _navigationService;
         private readonly ILogger _logger;
+        private readonly IEnumerable<string> _requestNewViews;
         public HomeViewModel(ITopLevelProvider topLevelProvider,
-            IEnumerable<IModule> modules,
-            NavigationService navigationService,
-            ILogger<HomeViewModel> logger) 
+            IRegionManager regionManager,
+            INavigationService navigationService,
+            ILogger<HomeViewModel> logger)
         {
             _navigationService = navigationService;
             _topLevelProvider = topLevelProvider;
             _logger = logger;
-            Modules = new ObservableCollection<IModule>(modules.Where(m=>m.ViewModelType != typeof(HomeViewModel)));
-            this.WhenAnyValue(x => x.SelectedItem)
-                .WhereNotNull()
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(c =>
+            _requestNewViews = ["ToolBoxView"];
+
+            ActivateViewCommand = ReactiveCommand.Create<ViewDiscription>(v => 
+            {
+                if (!string.IsNullOrEmpty(v.ViewKey))
                 {
-                    _logger.LogDebug($"navigate to {c.Key}");
-                    _navigationService.NavigateTo(c);
-                    GoClearSelection = true;
-                });
-        }
-        public ObservableCollection<IModule> Modules
-        {
-            get;
-            set;
-        }
+                    _navigationService.RequestViewNavigation("MainTabRegion", v.ViewKey, !_requestNewViews.Contains(v.ViewKey));
+                }
+            });
 
-        [Reactive]
-        public IModule? SelectedItem
-        {
-            get;
-            set;
+            Views = ViewManager.ViewDiscriptions.Values.Where(v=>v.ViewModelType != typeof(HomeViewModel));
+            using var scope = _logger.BeginScope("Views");
+            _logger.LogDebug($"{string.Join(';', Views.Select(v => v.ViewKey))}");
         }
-
-        [Reactive]
-        public bool GoClearSelection
+        public ReactiveCommand<ViewDiscription,Unit> ActivateViewCommand { get; }
+        public IEnumerable<ViewDiscription> Views
         {
             get;
-            set;
-        } = false;
+        }
     }
 }

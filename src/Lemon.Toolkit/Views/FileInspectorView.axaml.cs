@@ -11,8 +11,4 @@ public partial class FileInspectorView : UserControl, IView
     {
         InitializeComponent();
     }
-    public void SetDataContext(IViewModel viewModel)
-    {
-        this.DataContext = viewModel;
-    }
 }

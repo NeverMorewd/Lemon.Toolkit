@@ -3,6 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:Lemon.Toolkit.Behaviors"
+    xmlns:converters="using:Lemon.Toolkit.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:lm="https://github.com/NeverMorewd/Lemon.ModuleNavigation"
     xmlns:local="using:Lemon.Toolkit.Shells"
@@ -11,6 +12,8 @@
     xmlns:vm="using:Lemon.Toolkit.ViewModels"
     Name="shell"
     Title="Lemon.Toolkit"
+    Width="1200"
+    Height="750"
     MinWidth="900"
     MinHeight="600"
     d:DesignHeight="800"
@@ -19,9 +22,10 @@
     ExtendClientAreaTitleBarHeightHint="40"
     ExtendClientAreaToDecorationsHint="True"
     Icon="avares://Lemon.Toolkit/Assets/lemon-50.png"
-    SizeToContent="WidthAndHeight"
     mc:Ignorable="d">
-
+    <Window.Resources>
+        <converters:BoolToBlurEffectConverter x:Key="BoolToBlurEffectConverter" />
+    </Window.Resources>
     <Window.Styles>
         <Style Selector="Image#WindowIcon">
             <Setter Property="Width" Value="28" />
@@ -47,7 +51,7 @@
 
     <Grid
         Margin="4,4,4,4"
-        RowDefinitions="40,*,280"
+        RowDefinitions="40,*,auto"
         ShowGridLines="False">
 
         <StackPanel
@@ -67,44 +71,36 @@
                 Text="Lemon.Toolkit" />
         </StackPanel>
 
-        <lm:NTabContainer
+        <!--<GridSplitter
+            Grid.Row="2"
+            Height="1"
+            VerticalAlignment="Top" />-->
+
+        <TabControl
             Name="tab"
             Grid.Row="1"
             Margin="8"
             Padding="20,0,0,0"
             HorizontalAlignment="Stretch"
-            NavigationContext="{Binding NavigationContext}"
+            lm:NavigationExtension.RegionName="MainTabRegion"
+            Effect="{Binding IsProcessing, Converter={StaticResource BoolToBlurEffectConverter}}"
+            IsEnabled="{Binding !IsProcessing}"
             TabStripPlacement="Left"
             Theme="{DynamicResource NavigationTab}">
-            <lm:NTabContainer.ItemTemplate>
+            <TabControl.ItemTemplate>
                 <DataTemplate>
                     <Grid
-                        Width="200"
+                        Width="250"
                         Height="30"
                         ColumnDefinitions="*,30">
-                        <TextBlock VerticalAlignment="Center" Text="{Binding Alias}" />
-                        <Button
-                            Grid.Column="1"
-                            Width="30"
-                            Height="30"
-                            Padding="-2"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            lm:NTabContainerBehaviors.CanUnload="{Binding CanUnload}"
-                            Content="X"
-                            FontSize="11" />
+                        <TextBlock VerticalAlignment="Center" Text="{Binding}" />
                     </Grid>
                 </DataTemplate>
-            </lm:NTabContainer.ItemTemplate>
-            <lm:NTabContainer.ContentTemplate>
-                <DataTemplate>
-                    <!-- <ContentControl ContentTemplate="{Binding ViewTemplate}" /> -->
-                    <ContentControl Content="{Binding View}" />
-                </DataTemplate>
-            </lm:NTabContainer.ContentTemplate>
-        </lm:NTabContainer>
+            </TabControl.ItemTemplate>
+        </TabControl>
         <Expander
             Grid.Row="2"
+            Height="NaN"
             Margin="0,0,0,10"
             VerticalAlignment="Bottom"
             ExpandDirection="Up"
@@ -206,7 +202,10 @@
                         Text="{Binding OutputCount}" />
                 </StackPanel>
             </Expander.Header>
-            <Grid Name="ConsoleGrid">
+            <Grid
+                Name="ConsoleGrid"
+                MaxHeight="400"
+                Margin="2">
                 <Border
                     Margin="0"
                     BorderBrush="DodgerBlue"
@@ -215,11 +214,11 @@
                         <BlurEffect Radius="8" />
                     </Border.Effect>
                 </Border>
-                <ScrollViewer Margin="5">
+                <ScrollViewer Height="NaN" Margin="5">
                     <ItemsControl
                         Name="ItemsControlOutput"
+                        Height="NaN"
                         MinWidth="800"
-                        MinHeight="250"
                         Margin="5"
                         Padding="5"
                         HorizontalAlignment="Left"
@@ -233,15 +232,11 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel
-                                    Height="30"
-                                    Orientation="Horizontal"
-                                    Spacing="6">
-                                    <TextBlock
-                                        FontWeight="{Binding TextWeight}"
-                                        Foreground="{Binding TextBrush}"
-                                        Text="{Binding Text}" />
-                                </StackPanel>
+                                <TextBlock
+                                    FontWeight="{Binding TextWeight}"
+                                    Foreground="{Binding TextBrush}"
+                                    Text="{Binding Text}"
+                                    TextWrapping="Wrap" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <Interaction.Behaviors>
@@ -265,6 +260,7 @@
                         Content="Copy" />
                 </StackPanel>
             </Grid>
+
         </Expander>
         <ProgressBar
             Grid.Row="2"

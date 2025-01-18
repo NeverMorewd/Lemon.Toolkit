@@ -2,7 +2,6 @@
 using Avalonia.LogicalTree;
 using Avalonia.Xaml.Interactivity;
 using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Lemon.Toolkit.Behaviors
 {
@@ -10,7 +9,6 @@ namespace Lemon.Toolkit.Behaviors
     {
         private ItemsControl? _currentControl;
 
-        [RequiresUnreferencedCode("OnAttached")]
         protected override void OnAttached()
         {
             base.OnAttached();

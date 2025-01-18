@@ -22,6 +22,7 @@ namespace Lemon.Toolkit.Services
             {
                 if (_notificationManager == null)
                 {
+                    Ensure();
                     if (_topLevel != null)
                     {
                         _notificationManager = new WindowNotificationManager(_topLevel)

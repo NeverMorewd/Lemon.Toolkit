@@ -9,19 +9,20 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
-        <ListBox
-            Name="listbox"
-            ItemsSource="{Binding Modules}"
-            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-            SelectionMode="Single">
-            <ListBox.ItemTemplate>
+        <ItemsControl
+            Name="views"
+            HorizontalAlignment="Left"
+            ItemsSource="{Binding Views}">
+            <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Alias}" />
+                    <Button
+                        Width="300"
+                        Margin="0,5,0,0"
+                        Command="{Binding ElementName=views, Path=DataContext.ActivateViewCommand}"
+                        CommandParameter="{Binding}"
+                        Content="{Binding ViewClassName}" />
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-            <Interaction.Behaviors>
-                <behaviors:ClearSelectionBehavior GoClear="{Binding GoClearSelection}" />
-            </Interaction.Behaviors>
-        </ListBox>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </UserControl>

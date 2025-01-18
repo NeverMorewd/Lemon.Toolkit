@@ -2,13 +2,15 @@
 using Avalonia.ReactiveUI;
 using Lemon.Hosting.AvaloniauiDesktop;
 using Lemon.ModuleNavigation;
-using Lemon.ModuleNavigation.Abstracts;
+using Lemon.ModuleNavigation.Avaloniaui;
+using Lemon.ModuleNavigation.Avaloniaui.Extensions;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Logging;
 using Lemon.Toolkit.Models;
-using Lemon.Toolkit.Modules;
 using Lemon.Toolkit.Services;
 using Lemon.Toolkit.Shells;
+using Lemon.Toolkit.ViewModels;
+using Lemon.Toolkit.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -49,23 +51,23 @@ namespace Lemon.Toolkit
                     miniLevel));
             });
 
+            // navigation
+            hostBuilder.Services.AddAvaNavigationSupport();
+            // view
+            hostBuilder.Services.AddView<FileInspectorView, FileInspectorViewModel>(nameof(FileInspectorView));
+            hostBuilder.Services.AddView<HomeView, HomeViewModel>(nameof(HomeView));
+            hostBuilder.Services.AddView<TestView, TestViewModel>(nameof(TestView));
+            hostBuilder.Services.AddView<ToolBoxView, ToolBoxViewModel>(nameof(ToolBoxView));
+            hostBuilder.Services.AddView<ChromePreferenceInspector, ChromePreferenceViewModel>(nameof(ChromePreferenceInspector));
+
             // services
             hostBuilder.Services.AddSingleton(_consoleService);
+            hostBuilder.Services.AddSingleton<FileInspectorService>();
             hostBuilder.Services.AddSingleton<ITopLevelProvider, TopLevelProvider>();
             hostBuilder.Services.AddSingleton<ShellService>();
+            hostBuilder.Services.AddSingleton<GitSettingsService>();
             hostBuilder.Services.AddSingleton<IObservable<ShellParamModel>>(sp => sp.GetRequiredService<ShellService>());
             hostBuilder.Services.AddSingleton<IObserver<ShellParamModel>>(sp => sp.GetRequiredService<ShellService>());
-
-            // modules
-            hostBuilder.Services.AddModule<HomeModule>();
-            hostBuilder.Services.AddModule<FileInspectorModule>();
-            hostBuilder.Services.AddModule<FileComparerModule>();
-            hostBuilder.Services.AddModule<FileSimulateModule>();
-            hostBuilder.Services.AddModule<TestModule>();
-            hostBuilder.Services.AddModulesBuilder();
-
-            // navigation
-            hostBuilder.Services.AddNavigationContext();
             //
             hostBuilder.Services.AddAvaloniauiDesktopApplication<App>(ConfigAvaloniaAppBuilder);
             hostBuilder.Services.AddMainWindow<MainWindow, MainWindowViewModel>();
