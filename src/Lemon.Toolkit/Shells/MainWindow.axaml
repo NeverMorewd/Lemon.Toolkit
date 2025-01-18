@@ -3,6 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:Lemon.Toolkit.Behaviors"
+    xmlns:converters="using:Lemon.Toolkit.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:lm="https://github.com/NeverMorewd/Lemon.ModuleNavigation"
     xmlns:local="using:Lemon.Toolkit.Shells"
@@ -21,7 +22,9 @@
     Icon="avares://Lemon.Toolkit/Assets/lemon-50.png"
     SizeToContent="WidthAndHeight"
     mc:Ignorable="d">
-
+    <Window.Resources>
+        <converters:BoolToBlurEffectConverter x:Key="BoolToBlurEffectConverter" />
+    </Window.Resources>
     <Window.Styles>
         <Style Selector="Image#WindowIcon">
             <Setter Property="Width" Value="28" />
@@ -73,6 +76,8 @@
             Margin="8"
             Padding="20,0,0,0"
             HorizontalAlignment="Stretch"
+            Effect="{Binding IsProcessing, Converter={StaticResource BoolToBlurEffectConverter}}"
+            IsEnabled="{Binding !IsProcessing}"
             NavigationContext="{Binding NavigationContext}"
             TabStripPlacement="Left"
             Theme="{DynamicResource NavigationTab}">
