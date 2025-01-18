@@ -10,7 +10,7 @@
     <HeaderedContentControl Header="Git Proxy">
         <StackPanel>
             <TextBox Text="{Binding GitProxyPort}" />
-            <ToggleSwitch IsChecked="{Binding EnableGitProxy}" />
+            <ToggleSwitch IsChecked="{Binding EnableGitProxy, Mode=TwoWay}" />
         </StackPanel>
     </HeaderedContentControl>
 </UserControl>
