@@ -8,11 +8,11 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid RowDefinitions="*,*,*">
-        <ContentControl Grid.Row="0" 
-						ContentTemplate="{Binding TestNewTemplate}" />
-        <ContentControl Grid.Row="1" 
-						ContentTemplate="{Binding TestNewTemplate}" />
-        <ContentControl Grid.Row="2" 
-						ContentTemplate="{Binding TestNewTemplate}" />
+        <ContentControl Grid.Row="0" ContentTemplate="{Binding TestNewTemplate}" />
+        <ContentControl Grid.Row="1" ContentTemplate="{Binding TestNewTemplate}" />
+        <ContentControl
+            Grid.Row="2"
+            VerticalAlignment="Bottom"
+            ContentTemplate="{Binding TestNewTemplate}" />
     </Grid>
 </UserControl>
