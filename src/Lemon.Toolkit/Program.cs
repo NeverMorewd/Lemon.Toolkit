@@ -57,6 +57,7 @@ namespace Lemon.Toolkit
             hostBuilder.Services.AddView<FileInspectorView, FileInspectorViewModel>(nameof(FileInspectorView));
             hostBuilder.Services.AddView<HomeView, HomeViewModel>(nameof(HomeView));
             hostBuilder.Services.AddView<TestView, TestViewModel>(nameof(TestView));
+            hostBuilder.Services.AddView<ToolBoxView, ToolBoxViewModel>(nameof(ToolBoxView));
             hostBuilder.Services.AddView<ChromePreferenceInspector, ChromePreferenceViewModel>(nameof(ChromePreferenceInspector));
 
             // services
@@ -64,6 +65,7 @@ namespace Lemon.Toolkit
             hostBuilder.Services.AddSingleton<FileInspectorService>();
             hostBuilder.Services.AddSingleton<ITopLevelProvider, TopLevelProvider>();
             hostBuilder.Services.AddSingleton<ShellService>();
+            hostBuilder.Services.AddSingleton<GitSettingsService>();
             hostBuilder.Services.AddSingleton<IObservable<ShellParamModel>>(sp => sp.GetRequiredService<ShellService>());
             hostBuilder.Services.AddSingleton<IObserver<ShellParamModel>>(sp => sp.GetRequiredService<ShellService>());
             //
