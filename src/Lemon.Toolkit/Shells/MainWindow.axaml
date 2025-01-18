@@ -3,6 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:Lemon.Toolkit.Behaviors"
+    xmlns:converters="using:Lemon.Toolkit.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:lm="https://github.com/NeverMorewd/Lemon.ModuleNavigation"
     xmlns:local="using:Lemon.Toolkit.Shells"
@@ -11,6 +12,8 @@
     xmlns:vm="using:Lemon.Toolkit.ViewModels"
     Name="shell"
     Title="Lemon.Toolkit"
+    Width="1200"
+    Height="750"
     MinWidth="900"
     MinHeight="600"
     d:DesignHeight="800"
@@ -20,7 +23,9 @@
     ExtendClientAreaToDecorationsHint="True"
     Icon="avares://Lemon.Toolkit/Assets/lemon-50.png"
     mc:Ignorable="d">
-
+    <Window.Resources>
+        <converters:BoolToBlurEffectConverter x:Key="BoolToBlurEffectConverter" />
+    </Window.Resources>
     <Window.Styles>
         <Style Selector="Image#WindowIcon">
             <Setter Property="Width" Value="28" />
@@ -46,7 +51,7 @@
 
     <Grid
         Margin="4,4,4,4"
-        RowDefinitions="40,*,280"
+        RowDefinitions="40,*,auto"
         ShowGridLines="False">
 
         <StackPanel
@@ -66,19 +71,26 @@
                 Text="Lemon.Toolkit" />
         </StackPanel>
 
+        <GridSplitter
+            Grid.Row="2"
+            Height="2"
+            VerticalAlignment="Top" />
+
         <TabControl
             Name="tab"
             Grid.Row="1"
-			lm:NavigationExtension.RegionName="MainTabRegion"
             Margin="8"
             Padding="20,0,0,0"
             HorizontalAlignment="Stretch"
+            lm:NavigationExtension.RegionName="MainTabRegion"
+            Effect="{Binding IsProcessing, Converter={StaticResource BoolToBlurEffectConverter}}"
+            IsEnabled="{Binding !IsProcessing}"
             TabStripPlacement="Left"
             Theme="{DynamicResource NavigationTab}">
-			<TabControl.ItemTemplate>
+            <TabControl.ItemTemplate>
                 <DataTemplate>
                     <Grid
-                        Width="200"
+                        Width="250"
                         Height="30"
                         ColumnDefinitions="*,30">
                         <TextBlock VerticalAlignment="Center" Text="{Binding}" />
@@ -88,6 +100,7 @@
         </TabControl>
         <Expander
             Grid.Row="2"
+            Height="NaN"
             Margin="0,0,0,10"
             VerticalAlignment="Bottom"
             ExpandDirection="Up"
@@ -198,11 +211,11 @@
                         <BlurEffect Radius="8" />
                     </Border.Effect>
                 </Border>
-                <ScrollViewer Margin="5">
+                <ScrollViewer Height="NaN" Margin="5">
                     <ItemsControl
                         Name="ItemsControlOutput"
+                        Height="NaN"
                         MinWidth="800"
-                        MinHeight="250"
                         Margin="5"
                         Padding="5"
                         HorizontalAlignment="Left"
@@ -248,6 +261,7 @@
                         Content="Copy" />
                 </StackPanel>
             </Grid>
+
         </Expander>
         <ProgressBar
             Grid.Row="2"
