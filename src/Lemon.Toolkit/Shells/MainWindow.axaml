@@ -71,10 +71,10 @@
                 Text="Lemon.Toolkit" />
         </StackPanel>
 
-        <GridSplitter
+        <!--<GridSplitter
             Grid.Row="2"
-            Height="2"
-            VerticalAlignment="Top" />
+            Height="1"
+            VerticalAlignment="Top" />-->
 
         <TabControl
             Name="tab"
@@ -202,7 +202,10 @@
                         Text="{Binding OutputCount}" />
                 </StackPanel>
             </Expander.Header>
-            <Grid Name="ConsoleGrid">
+            <Grid
+                Name="ConsoleGrid"
+                MaxHeight="400"
+                Margin="2">
                 <Border
                     Margin="0"
                     BorderBrush="DodgerBlue"

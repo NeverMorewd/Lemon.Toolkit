@@ -92,7 +92,7 @@ namespace Lemon.Toolkit.Shells
                 var texts = _outputs.Select(o => o.Text);
                 var outputString = string.Join(Environment.NewLine, texts);
                 await _topLevelProvider.Ensure().Clipboard!.SetTextAsync(outputString);
-                _topLevelProvider.NotificationManager.Show(new Notification("Success", "Copied!", NotificationType.Success));
+                _topLevelProvider.NotificationManager!.Show(new Notification("Success", "Copied!", NotificationType.Success));
             });
 
             var valueChangedCleanup = this.WhenAnyValue(x => x.ConsoleIsExpanded)
