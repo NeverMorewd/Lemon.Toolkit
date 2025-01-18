@@ -35,11 +35,11 @@
 
             if (!string.IsNullOrEmpty(httpProxy) || !string.IsNullOrEmpty(httpsProxy))
             {
-                return $"当前Git代理设置:\nhttp.proxy: {httpProxy ?? "未设置"}\nhttps.proxy: {httpsProxy ?? "未设置"}";
+                return $"Current Git Proxy Settings:{Environment.NewLine}http.proxy: {httpProxy ?? "未设置"}{Environment.NewLine}https.proxy: {httpsProxy ?? "未设置"}";
             }
             else
             {
-                return "当前未设置Git代理。";
+                return "Current Git Proxy Settings:None";
             }
         }
         private string? GetGitConfig(string key)
@@ -79,7 +79,7 @@
                 {
                     if (!silent)
                     {
-                        throw new InvalidOperationException($"Git命令执行失败: {error}");
+                        throw new InvalidOperationException($"Git command execute failed: {error}");
                     }
                     return null;
                 }

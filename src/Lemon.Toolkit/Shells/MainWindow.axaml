@@ -232,15 +232,11 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel
-                                    Height="30"
-                                    Orientation="Horizontal"
-                                    Spacing="6">
-                                    <TextBlock
-                                        FontWeight="{Binding TextWeight}"
-                                        Foreground="{Binding TextBrush}"
-                                        Text="{Binding Text}" />
-                                </StackPanel>
+                                <TextBlock
+                                    FontWeight="{Binding TextWeight}"
+                                    Foreground="{Binding TextBrush}"
+                                    Text="{Binding Text}"
+                                    TextWrapping="Wrap" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <Interaction.Behaviors>
