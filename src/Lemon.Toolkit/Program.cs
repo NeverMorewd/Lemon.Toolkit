@@ -1,11 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
+using Lemon.HandyLib.Logging;
 using Lemon.Hosting.AvaloniauiDesktop;
 using Lemon.ModuleNavigation;
-using Lemon.ModuleNavigation.Avaloniaui;
 using Lemon.ModuleNavigation.Avaloniaui.Extensions;
 using Lemon.Toolkit.Domains;
-using Lemon.Toolkit.Logging;
 using Lemon.Toolkit.Models;
 using Lemon.Toolkit.Services;
 using Lemon.Toolkit.Shells;
@@ -15,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Runtime.Versioning;
 
@@ -22,16 +22,12 @@ namespace Lemon.Toolkit
 {
     internal class Program
     {
-        internal readonly static ConsoleService _consoleService = new();
         [STAThread]
         [SupportedOSPlatform("windows")]
-        [SupportedOSPlatform("linux")]
-        [SupportedOSPlatform("macos")]
         public static void Main(string[] args)
         {
-            Console.SetOut(_consoleService);
-            Console.SetError(_consoleService);
-            Console.WriteLine("====𝕃𝕖𝕞𝕠𝕟====");
+            SerilLogHelper.Config("Lemon.Toolkit");
+            SerilLogHelper.Information("====𝕃𝕖𝕞𝕠𝕟====");
             var hostBuilder = Host.CreateApplicationBuilder();
 
             // config IConfiguration
@@ -42,14 +38,15 @@ namespace Lemon.Toolkit
 
             // logger
             hostBuilder.Logging.ClearProviders();
-            hostBuilder.Services.AddLogging(builder =>
-            {
-                var miniLevel = LogLevel.Debug;
-                builder.SetMinimumLevel(miniLevel);
-                builder.AddProvider(new UILoggerProvider("UILogger",
-                    _consoleService,
-                    miniLevel));
-            });
+            hostBuilder.Logging.AddSerilog();
+            //hostBuilder.Services.AddLogging(builder =>
+            //{
+            //    var miniLevel = LogLevel.Debug;
+            //    builder.SetMinimumLevel(miniLevel);
+            //    builder.AddProvider(new UILoggerProvider("UILogger",
+            //        _consoleService,
+            //        miniLevel));
+            //});
 
             // navigation
             hostBuilder.Services.AddAvaNavigationSupport();
@@ -61,7 +58,7 @@ namespace Lemon.Toolkit
             hostBuilder.Services.AddView<ChromePreferenceInspector, ChromePreferenceViewModel>(nameof(ChromePreferenceInspector));
 
             // services
-            hostBuilder.Services.AddSingleton(_consoleService);
+            hostBuilder.Services.AddSingleton<ConsoleStreamService>();
             hostBuilder.Services.AddSingleton<FileInspectorService>();
             hostBuilder.Services.AddSingleton<ITopLevelProvider, TopLevelProvider>();
             hostBuilder.Services.AddSingleton<ShellService>();
@@ -75,8 +72,6 @@ namespace Lemon.Toolkit
 
         }
         [SupportedOSPlatform("windows")]
-        [SupportedOSPlatform("linux")]
-        [SupportedOSPlatform("macos")]
         private static void RunApp(HostApplicationBuilder hostBuilder, string[] args)
         {
             var appHost = hostBuilder.Build();

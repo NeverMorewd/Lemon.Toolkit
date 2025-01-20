@@ -37,7 +37,6 @@ namespace Lemon.Toolkit.ViewModels
             });
 
             Views = ViewManager.ViewDiscriptions.Values.Where(v=>v.ViewModelType != typeof(HomeViewModel));
-            using var scope = _logger.BeginScope("Views");
             _logger.LogDebug($"{string.Join(';', Views.Select(v => v.ViewKey))}");
         }
         public ReactiveCommand<ViewDiscription,Unit> ActivateViewCommand { get; }

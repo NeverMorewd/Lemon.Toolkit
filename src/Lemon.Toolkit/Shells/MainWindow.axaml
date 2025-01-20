@@ -204,7 +204,7 @@
             </Expander.Header>
             <Grid
                 Name="ConsoleGrid"
-                MaxHeight="400"
+                MinHeight="200"
                 Margin="2">
                 <Border
                     Margin="0"
@@ -214,36 +214,86 @@
                         <BlurEffect Radius="8" />
                     </Border.Effect>
                 </Border>
-                <ScrollViewer Height="NaN" Margin="5">
-                    <ItemsControl
-                        Name="ItemsControlOutput"
-                        Height="NaN"
-                        MinWidth="800"
-                        Margin="5"
-                        Padding="5"
-                        HorizontalAlignment="Left"
-                        FontSize="14"
-                        Foreground="DodgerBlue"
-                        ItemsSource="{Binding Outputs}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel Orientation="Vertical" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
+                <ListBox Margin="5" ItemsSource="{Binding LogEntries}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="20" Margin="5">
+                                <!--  定义列  -->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="180" />
+                                    <!--  Timestamp  -->
+                                    <ColumnDefinition Width="50" />
+                                    <!--  Level  -->
+                                    <ColumnDefinition Width="70" />
+                                    <!--  ProcessId  -->
+                                    <ColumnDefinition Width="30" />
+                                    <!--  ThreadId  -->
+                                    <ColumnDefinition Width="100" />
+                                    <!--  Interval  -->
+                                    <ColumnDefinition Width="100" />
+                                    <!--  Caller  -->
+                                    <ColumnDefinition Width="*" />
+                                    <!--  Message + Exception  -->
+                                    <ColumnDefinition Width="Auto" />
+                                    <!--  Expand Button  -->
+                                </Grid.ColumnDefinitions>
+
+                                <!--  Timestamp  -->
+                                <TextBlock Grid.Column="0" Text="{Binding Timestamp, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss.fff}'}" />
+
+                                <!--  Level  -->
                                 <TextBlock
-                                    FontWeight="{Binding TextWeight}"
-                                    Foreground="{Binding TextBrush}"
-                                    Text="{Binding Text}"
-                                    TextWrapping="Wrap" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        <Interaction.Behaviors>
-                            <behaviors:ItemsControlAutoScrollBehavior />
-                        </Interaction.Behaviors>
-                    </ItemsControl>
-                </ScrollViewer>
+                                    Grid.Column="1"
+                                    Margin="3,0"
+                                    Text="{Binding Level}" />
+
+                                <!--  ProcessId  -->
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Margin="3,0"
+                                    Text="{Binding ProcessId}" />
+
+                                <!--  ThreadId  -->
+                                <TextBlock
+                                    Grid.Column="3"
+                                    Margin="3,0"
+                                    Text="{Binding ThreadId}" />
+
+                                <!--  Interval  -->
+                                <TextBlock
+                                    Grid.Column="4"
+                                    Margin="3,0"
+                                    FontFamily="Consolas"
+                                    Text="{Binding Interval}" />
+
+                                <!--  Caller  -->
+                                <TextBlock
+                                    Grid.Column="5"
+                                    Margin="3,0"
+                                    Text="{Binding Caller}"
+                                    TextTrimming="CharacterEllipsis"
+                                    ToolTip.Tip="{Binding Caller}" />
+
+                                <!--  Message + Exception  -->
+                                <TextBlock
+                                    Grid.Column="6"
+                                    Margin="3,0"
+                                    Text="{Binding Message}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap"
+                                    ToolTip.Tip="{Binding Message}" />
+
+                                <!--  Expand Button  -->
+                                <Button
+                                    Grid.Column="7"
+                                    Margin="10,0"
+                                    Command="{Binding $parent[Window].DataContext.ExpandCommand}"
+                                    CommandParameter="{Binding}"
+                                    Content="Expand" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
                 <StackPanel
                     Margin="0,10,20,0"
                     HorizontalAlignment="Right"

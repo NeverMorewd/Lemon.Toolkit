@@ -9,5 +9,6 @@ namespace Lemon.Toolkit.Domains
         WindowNotificationManager? NotificationManager {get;}
         TopLevel Ensure(TimeSpan timespan = default);
         TopLevel? Get();
+        Window MainWindow { get; }
     }
 }

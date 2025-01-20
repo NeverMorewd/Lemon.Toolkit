@@ -2,6 +2,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Notifications;
 using Lemon.Toolkit.Domains;
+using Lemon.Toolkit.Shells;
 using System;
 using System.Threading;
 
@@ -12,6 +13,7 @@ namespace Lemon.Toolkit.Services
         private TopLevel? _topLevel;
         private WindowNotificationManager? _notificationManager;
         private readonly SemaphoreSlim _semaphore = new(1, 1);
+        private Window? _mainWindow;
 
         public TopLevelProvider()
         {
@@ -33,6 +35,14 @@ namespace Lemon.Toolkit.Services
                     }
                 }
                 return _notificationManager;
+            }
+        }
+        public Window MainWindow
+        {
+            get
+            {
+                Ensure();
+                return _mainWindow!;
             }
         }
         public TopLevel? Get()
@@ -88,7 +98,8 @@ namespace Lemon.Toolkit.Services
                 {
                     if (desktop.MainWindow is not null)
                     {
-                        _topLevel = TopLevel.GetTopLevel(desktop.MainWindow);
+                        _mainWindow = desktop.MainWindow;
+                        _topLevel = TopLevel.GetTopLevel(_mainWindow);
                         return _topLevel;
                     }
                 }

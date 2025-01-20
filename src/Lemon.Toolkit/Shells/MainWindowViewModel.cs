@@ -1,6 +1,10 @@
-﻿using Avalonia.Controls.Notifications;
+﻿using Avalonia.Controls;
+using Avalonia;
+using Avalonia.Controls.Notifications;
+using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using DynamicData;
+using Lemon.HandyLib.Logging.Definitions;
 using Lemon.ModuleNavigation.Abstracts;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
@@ -15,6 +19,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Notification = Avalonia.Controls.Notifications.Notification;
 
 namespace Lemon.Toolkit.Shells
@@ -24,14 +29,14 @@ namespace Lemon.Toolkit.Shells
         private const int MaxOutputCount = 200;
         private readonly CompositeDisposable _disposables;
         private readonly ITopLevelProvider _topLevelProvider;
-        private readonly ConsoleService _consoleService;
+        private readonly ConsoleStreamService _consoleService;
         private readonly IObservable<ShellParamModel> _shellService;
         private readonly ILogger _logger;
-        private readonly SourceCache<ConsoleTextModel, Guid> _outputsCache = new(x => x.Id);
-        private readonly ReadOnlyObservableCollection<ConsoleTextModel> _outputs;
+        private readonly SourceCache<LogEntry, Guid> _outputsCache = new(x => x.Id);
+        private readonly ReadOnlyObservableCollection<LogEntry> _outputs;
         private readonly INavigationService _navigationService;
         public MainWindowViewModel(ITopLevelProvider topLevelProvder,
-            ConsoleService consoleService,
+            ConsoleStreamService consoleService,
             IObservable<ShellParamModel> shellService,
             INavigationService navigationService,
             IServiceProvider serviceProvider,
@@ -60,20 +65,6 @@ namespace Lemon.Toolkit.Shells
                     if (OutputCount == 100) return;
                     OutputCount += cache.Count;
                 });
-            var consoleOutputCleanup = consoleService
-                .OutputObservable
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(outPut =>
-                {
-                    _outputsCache.AddOrUpdate(new ConsoleTextModel($"{outPut}"));
-                });
-            var consoleErrorCleanup = consoleService
-                .ErrorObservable
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(outPut =>
-                {
-                    _outputsCache.AddOrUpdate(new ConsoleTextModel($"{outPut}", brush: new SolidColorBrush(Colors.Red)));
-                });
 
             #endregion
             _shellService
@@ -89,12 +80,12 @@ namespace Lemon.Toolkit.Shells
                 {
                     return;
                 }
-                var texts = _outputs.Select(o => o.Text);
+                var texts = _outputs.Select(o => o.Message);
                 var outputString = string.Join(Environment.NewLine, texts);
                 await _topLevelProvider.Ensure().Clipboard!.SetTextAsync(outputString);
                 _topLevelProvider.NotificationManager!.Show(new Notification("Success", "Copied!", NotificationType.Success));
             });
-
+            ExpandCommand = ReactiveCommand.Create<LogEntry>(ShowLogDetails);
             var valueChangedCleanup = this.WhenAnyValue(x => x.ConsoleIsExpanded)
                 .Subscribe(c =>
                 {
@@ -103,12 +94,20 @@ namespace Lemon.Toolkit.Shells
                         OutputCount = 0;
                     }
                 });
-
+            _consoleService
+                 .OutputStream
+                 .Merge(_consoleService.ErrorStream)
+                 .Select(line=>LogEntry.ParseLog(line))
+                 .ObserveOn(RxApp.MainThreadScheduler)
+                 .Subscribe(
+                     log =>
+                     {
+                         _outputsCache.AddOrUpdate(log);
+                     }
+                 );
             _disposables = new(cacheCleanup,
                 cacheCountCleanup,
-                consoleOutputCleanup,
-                valueChangedCleanup,
-                consoleErrorCleanup);
+                valueChangedCleanup);
 
         }
         [Reactive]
@@ -135,8 +134,8 @@ namespace Lemon.Toolkit.Shells
             get;
             set;
         }
-
-        public ReadOnlyObservableCollection<ConsoleTextModel> Outputs
+        public ReactiveCommand<LogEntry, Unit> ExpandCommand { get; }
+        public ReadOnlyObservableCollection<LogEntry> LogEntries
         {
             get => _outputs;
         }
@@ -154,6 +153,32 @@ namespace Lemon.Toolkit.Shells
             get;
         }
 
+        private void ShowLogDetails(LogEntry logEntry)
+        {
+            var dialog = new Window
+            {
+                Title = "Log Details",
+                Width = 600,
+                Height = 400,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Content = new StackPanel
+                {
+                    Margin = new Thickness(10),
+                    Children =
+                    {
+                        new TextBlock { Text = $"Timestamp: {logEntry.Timestamp:yyyy-MM-dd HH:mm:ss.fff}" },
+                        new TextBlock { Text = $"Level: {logEntry.Level}" },
+                        new TextBlock { Text = $"Process ID: {logEntry.ProcessId}" },
+                        new TextBlock { Text = $"Thread ID: {logEntry.ThreadId}" },
+                        new TextBlock { Text = $"Interval: {logEntry.Interval}" },
+                        new TextBlock { Text = $"Caller: {logEntry.Caller}" },
+                        new TextBlock { Text = $"Message: {logEntry.Message}" },
+                        new TextBlock { Text = $"Exception: {logEntry.Exception}" }
+                    }
+                }
+            };
+            dialog.ShowDialog(_topLevelProvider.MainWindow);
+        }
         public override void Dispose()
         {
             _disposables?.Dispose();
