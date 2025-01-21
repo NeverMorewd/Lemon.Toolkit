@@ -9,6 +9,92 @@
 
     <Application.Styles>
         <semi:SemiTheme Locale="zh-cn" />
+
+        <Style Selector="Button.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+        <Style Selector="Button.RetroDanger">
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroImportantForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroImportantForegroundBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+        <Style Selector="TextBox.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="BorderThickness" Value="0,0,0,2" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="CaretBrush" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+
+        <Style Selector="TextBox.Retro:focus /template/ Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+        </Style>
+
+        <Style Selector="TextBox.Retro:pointerover /template/ Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroTransparentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+
+        <Style Selector="ComboBox.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+
+        <Style Selector="TabItem.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+
+        <Style Selector="Expander.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+        <Style Selector="Path.Retro">
+            <Setter Property="Stroke" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Fill" Value="{DynamicResource RetroRegularForegroundBrush}" />
+        </Style>
+
+
     </Application.Styles>
-    <Application.Resources />
+    <Application.Resources>
+        <Color x:Key="BlackColor">Black</Color>
+        <Color x:Key="LimeColor">Lime</Color>
+        <Color x:Key="DeepSkyBlueColor">#00BFFF</Color>
+        <Color x:Key="AmberColor">#FF7F00</Color>
+        <Color x:Key="RedColor">#FF4444</Color>
+        <Color x:Key="TransparentColor">Transparent</Color>
+        <SolidColorBrush x:Key="RetroMainBackgroundBrush" Color="{DynamicResource BlackColor}" />
+        <SolidColorBrush x:Key="RetroRegularForegroundBrush" Color="{DynamicResource LimeColor}" />
+        <SolidColorBrush x:Key="RetroInputForegroundBrush" Color="{DynamicResource DeepSkyBlueColor}" />
+        <SolidColorBrush x:Key="RetroImportantForegroundBrush" Color="{DynamicResource AmberColor}" />
+        <SolidColorBrush x:Key="RetroSeriousForegroundBrush" Color="{DynamicResource ErrorRedColor}" />
+        <SolidColorBrush x:Key="RetroBorderBrush" Color="{DynamicResource LimeColor}" />
+        <SolidColorBrush x:Key="RetroTransparentBrush" Color="{DynamicResource TransparentColor}" />
+
+        <FontFamily x:Key="RetroFontFamily">Courier New</FontFamily>
+        <x:Double x:Key="RetroFontSize">16</x:Double>
+    </Application.Resources>
 </Application>

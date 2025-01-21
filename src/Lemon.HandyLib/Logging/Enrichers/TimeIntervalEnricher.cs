@@ -11,21 +11,20 @@ namespace Lemon.HandyLib.Logging.Enrichers
 
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            // 当前日志的时间
             var currentTime = logEvent.Timestamp.UtcDateTime;
 
-            // 计算与上一条日志的时间间隔
             if (_lastLogTime.HasValue)
             {
                 var interval = currentTime - _lastLogTime.Value;
-                logEvent.AddPropertyIfAbsent(new LogEventProperty("Interval", new ScalarValue(Caculate(interval))));
+                var result = GenerateGraph(interval);
+                logEvent.AddPropertyIfAbsent(new LogEventProperty("IntervalGraph", new ScalarValue(result.Graph)));
+                logEvent.AddPropertyIfAbsent(new LogEventProperty("Interval", new ScalarValue(result.Interval)));
             }
 
-            // 更新最后一次记录的时间
             _lastLogTime = currentTime;
         }
 
-        private string Caculate(TimeSpan timeSpan, int unitMs = 100)
+        public static (string Graph, string Interval) GenerateGraph(TimeSpan timeSpan, int unitMs = 100)
         {
             char[] template = Enumerable.Range(0, 9).Select(_ => ' ').ToArray();
             try
@@ -45,11 +44,11 @@ namespace Lemon.HandyLib.Logging.Enrichers
                     }
                     template[i] = '-';
                 }
-                return $"[{new string(template)}]:{(int)timeSpan.TotalMilliseconds}ms";
+                return ($"[{new string(template)}]", timeSpan.TotalMilliseconds.ToString("0.0"));
             }
             catch
             {
-                return $"[Too long]";
+                return ($"[##########]", timeSpan.TotalMilliseconds.ToString("0.0"));
             }
         }
     }

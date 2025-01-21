@@ -1,6 +1,5 @@
 ﻿using Serilog;
 using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace Lemon.HandyLib.Logging
@@ -23,13 +22,11 @@ namespace Lemon.HandyLib.Logging
         {
             if (_logger == null)
             {
-                const string LogTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} | {Level:u3} | {ProcessId} | {ThreadId:0000} | {Interval} | {Caller} | {Message:lj}{NewLine}{Exception}";
+                const string LogTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} | {Level:u3} | {ProcessId} | {ThreadId:0000} | {IntervalGraph} | {Interval} | {Caller} | {Message:lj}{NewLine}{Exception}";
 
                 var rootDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                var settings = LogSettingsHelper.CurrentSettings;
-
-                var remainFileCount = settings.RemainFileCount;
-                var remainFileDay = TimeSpan.FromDays(settings.RemainDay);
+                var remainFileCount = 10;
+                var remainFileDay = TimeSpan.FromDays(3);
 
                 var configuration = new LoggerConfiguration()
                                       .MinimumLevel.Debug()
