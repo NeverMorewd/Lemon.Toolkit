@@ -160,6 +160,7 @@ namespace Lemon.Toolkit.Shells
                 Title = "Log Details",
                 Width = 600,
                 Height = 400,
+                WindowState = WindowState.Maximized,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Content = new StackPanel
                 {

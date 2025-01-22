@@ -1,7 +1,19 @@
 <Window
+    ExtendClientAreaTitleBarHeightHint="40"
+    ExtendClientAreaToDecorationsHint="True"
+    Height="750"
+    Icon="avares://Lemon.Toolkit/Assets/lemon-50.png"
+    MinHeight="600"
+    MinWidth="900"
+    Name="shell"
+    Title="Lemon.Toolkit"
+    Width="1200"
+    d:DesignHeight="800"
+    d:DesignWidth="1000"
+    mc:Ignorable="d"
     x:Class="Lemon.Toolkit.Shells.MainWindow"
+    x:DataType="local:MainWindowViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:Lemon.Toolkit.Behaviors"
     xmlns:converters="using:Lemon.Toolkit.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,19 +23,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:v="using:Lemon.Toolkit.Views"
     xmlns:vm="using:Lemon.Toolkit.ViewModels"
-    Name="shell"
-    Title="Lemon.Toolkit"
-    Width="1200"
-    Height="750"
-    MinWidth="900"
-    MinHeight="600"
-    d:DesignHeight="800"
-    d:DesignWidth="1000"
-    x:DataType="local:MainWindowViewModel"
-    ExtendClientAreaTitleBarHeightHint="40"
-    ExtendClientAreaToDecorationsHint="True"
-    Icon="avares://Lemon.Toolkit/Assets/lemon-50.png"
-    mc:Ignorable="d">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Window.Resources>
         <converters:BoolToBlurEffectConverter x:Key="BoolToBlurEffectConverter" />
         <converters:LogTypeToBrushConverter x:Key="LogTypeToBrushConverter" />
@@ -35,7 +35,7 @@
         </Style>
         <Style Selector="Image#WindowIcon:pointerover">
             <Style.Animations>
-                <Animation IterationCount="INFINITE" Duration="0:0:0.5">
+                <Animation Duration="0:0:0.5" IterationCount="INFINITE">
                     <KeyFrame Cue="0%">
                         <Setter Property="RotateTransform.Angle" Value="1" />
                     </KeyFrame>
@@ -47,10 +47,6 @@
         </Style>
     </Window.Styles>
 
-    <Design.DataContext>
-        <vm:MainWindowViewModel />
-    </Design.DataContext>
-
     <Grid
         Margin="4,4,4,4"
         RowDefinitions="40,*,auto"
@@ -58,18 +54,18 @@
 
         <StackPanel
             Grid.Row="0"
-            Margin="2,2,0,0"
             HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Orientation="Horizontal">
+            Margin="2,2,0,0"
+            Orientation="Horizontal"
+            VerticalAlignment="Top">
             <Image
                 Name="WindowIcon"
                 Source="avares://Lemon.Toolkit/Assets/lemon-50.png"
                 Stretch="UniformToFill" />
             <TextBlock
-                Margin="2,5,0,0"
                 FontWeight="SemiBold"
                 Foreground="Gray"
+                Margin="2,5,0,0"
                 Text="Lemon.Toolkit" />
         </StackPanel>
 
@@ -79,34 +75,34 @@
             VerticalAlignment="Top" />-->
 
         <TabControl
-            Name="tab"
-            Grid.Row="1"
-            Margin="8"
-            Padding="20,0,0,0"
-            HorizontalAlignment="Stretch"
-            lm:NavigationExtension.RegionName="MainTabRegion"
             Effect="{Binding IsProcessing, Converter={StaticResource BoolToBlurEffectConverter}}"
+            Grid.Row="1"
+            HorizontalAlignment="Stretch"
             IsEnabled="{Binding !IsProcessing}"
+            Margin="8"
+            Name="tab"
+            Padding="20,0,0,0"
             TabStripPlacement="Left"
-            Theme="{DynamicResource NavigationTab}">
+            Theme="{DynamicResource NavigationTab}"
+            lm:NavigationExtension.RegionName="MainTabRegion">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <Grid
-                        Width="250"
+                        ColumnDefinitions="*,30"
                         Height="30"
-                        ColumnDefinitions="*,30">
-                        <TextBlock VerticalAlignment="Center" Text="{Binding}" />
+                        Width="250">
+                        <TextBlock Text="{Binding}" VerticalAlignment="Center" />
                     </Grid>
                 </DataTemplate>
             </TabControl.ItemTemplate>
         </TabControl>
         <Expander
+            ExpandDirection="Up"
             Grid.Row="2"
             Height="NaN"
+            IsExpanded="{Binding ConsoleIsExpanded}"
             Margin="0,0,0,10"
-            VerticalAlignment="Bottom"
-            ExpandDirection="Up"
-            IsExpanded="{Binding ConsoleIsExpanded}">
+            VerticalAlignment="Bottom">
             <Expander.Header>
                 <DockPanel LastChildFill="True">
                     <StackPanel
@@ -114,15 +110,15 @@
                         Orientation="Horizontal"
                         Spacing="5">
                         <Viewbox
-                            Width="30"
                             Height="30"
                             Margin="0,10,0,0"
+                            Stretch="Uniform"
                             VerticalAlignment="Center"
-                            Stretch="Uniform">
+                            Width="30">
                             <Canvas
-                                Width="400.0"
                                 Height="400.0"
-                                UseLayoutRounding="False">
+                                UseLayoutRounding="False"
+                                Width="400.0">
                                 <Path Classes="Retro" StrokeThickness="2">
                                     <Path.Data>
                                         <PathGeometry Figures="M 50,50 L 250,50 L 250,150 L 50,150 Z" />
@@ -144,23 +140,23 @@
                             </Canvas>
                         </Viewbox>
                         <TextBlock
-                            VerticalAlignment="Center"
                             FontSize="15"
                             Foreground="{DynamicResource RetroBorderBrush}"
-                            Text="Console " />
+                            Text="Console "
+                            VerticalAlignment="Center" />
                         <TextBlock
-                            VerticalAlignment="Center"
                             FontSize="15"
                             Foreground="{DynamicResource RetroBorderBrush}"
-                            Text="{Binding OutputCount}" />
+                            Text="{Binding OutputCount}"
+                            VerticalAlignment="Center" />
                     </StackPanel>
                     <StackPanel
-                        Margin="0,5,20,0"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Top"
                         DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
+                        Margin="0,5,20,0"
                         Orientation="Horizontal"
-                        Spacing="5">
+                        Spacing="5"
+                        VerticalAlignment="Top">
                         <Button
                             Classes="Retro"
                             Command="{Binding ExecuteCommand}"
@@ -177,33 +173,33 @@
                             Content="Copy" />
                     </StackPanel>
                     <TextBox
-                        Name="Input"
-                        Height="35"
-                        Margin="15,2,5,0"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
                         CaretBlinkInterval="0.3"
-                        Classes="Retro" />
+                        Classes="Retro"
+                        Height="35"
+                        HorizontalAlignment="Stretch"
+                        Margin="15,2,5,0"
+                        Name="Input"
+                        VerticalAlignment="Stretch" />
                 </DockPanel>
             </Expander.Header>
             <Grid
-                Name="ConsoleGrid"
+                Margin="2"
                 MinHeight="200"
-                Margin="2">
+                Name="ConsoleGrid">
                 <Border
-                    Margin="0"
                     BorderBrush="{DynamicResource RetroBorderBrush}"
-                    BorderThickness="1">
+                    BorderThickness="1"
+                    Margin="0">
                     <Border.Effect>
                         <BlurEffect Radius="8" />
                     </Border.Effect>
                 </Border>
                 <ListBox
-                    MaxHeight="400"
+                    ItemsSource="{Binding LogEntries}"
                     Margin="5"
-                    ItemsSource="{Binding LogEntries}">
+                    MaxHeight="400">
                     <ListBox.ItemTemplate>
-                        <DataTemplate DataType="">
+                        <DataTemplate DataType="{x:Type handylib:LogEntry}">
                             <Grid Height="20" Margin="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="220" />
@@ -228,63 +224,63 @@
 
                                 <!--  Timestamp  -->
                                 <TextBlock
-                                    Grid.Column="0"
                                     Classes="Retro"
+                                    Grid.Column="0"
                                     Text="{Binding Timestamp, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss.fff}'}" />
 
                                 <!--  Level  -->
                                 <TextBlock
+                                    Classes="Retro"
                                     Grid.Column="1"
                                     Margin="3,0"
-                                    Classes="Retro"
                                     Text="{Binding Level}" />
 
                                 <!--  ProcessId  -->
                                 <TextBlock
+                                    Classes="Retro"
                                     Grid.Column="2"
                                     Margin="3,0"
-                                    Classes="Retro"
                                     Text="{Binding ProcessId}" />
 
                                 <!--  ThreadId  -->
                                 <TextBlock
+                                    Classes="Retro"
                                     Grid.Column="3"
                                     Margin="3,0"
-                                    Classes="Retro"
                                     Text="{Binding ThreadId}" />
 
                                 <!--  Interval  -->
                                 <TextBlock
-                                    Grid.Column="4"
-                                    Margin="3,0"
                                     Classes="Retro"
                                     FontFamily="Consolas"
+                                    Grid.Column="4"
+                                    Margin="3,0"
                                     Text="{Binding IntervalGraph}" />
 
                                 <TextBlock
-                                    Grid.Column="5"
-                                    MaxWidth="60"
-                                    Margin="3,0"
                                     Classes="Retro"
                                     FontFamily="Consolas"
+                                    Grid.Column="5"
+                                    Margin="3,0"
+                                    MaxWidth="60"
                                     Text="{Binding Interval}"
                                     TextTrimming="CharacterEllipsis"
                                     ToolTip.Tip="{Binding Interval}" />
 
                                 <!--  Caller  -->
                                 <TextBlock
+                                    Classes="Retro"
                                     Grid.Column="6"
                                     Margin="3,0"
-                                    Classes="Retro"
                                     Text="{Binding Caller}"
                                     TextTrimming="CharacterEllipsis"
                                     ToolTip.Tip="{Binding Caller}" />
 
                                 <!--  Message + Exception  -->
                                 <TextBlock
+                                    Classes="Retro"
                                     Grid.Column="7"
                                     Margin="3,0"
-                                    Classes="Retro"
                                     Text="{Binding Message}"
                                     TextTrimming="CharacterEllipsis"
                                     TextWrapping="NoWrap"
@@ -292,17 +288,17 @@
 
                                 <!--  Expand Button  -->
                                 <Button
-                                    Grid.Column="8"
-                                    Margin="10,0"
                                     Classes="Retro"
                                     Command="{Binding $parent[Window].DataContext.ExpandCommand}"
                                     CommandParameter="{Binding}"
-                                    Content="Expand" />
+                                    Content="Expand"
+                                    Grid.Column="8"
+                                    Margin="10,0" />
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.Styles>
-                        <Style x:DataType="handylib:LogEntry" Selector="TextBlock.Retro">
+                        <Style Selector="TextBlock.Retro" x:DataType="handylib:LogEntry">
                             <Setter Property="Foreground" Value="{Binding Type, Converter={StaticResource LogTypeToBrushConverter}}" />
                         </Style>
                     </ListBox.Styles>
@@ -317,9 +313,9 @@
         <ProgressBar
             Grid.Row="2"
             Height="10"
-            VerticalAlignment="Bottom"
             IsIndeterminate="{Binding $self.IsVisible}"
-            IsVisible="{Binding IsProcessing}" />
+            IsVisible="{Binding IsProcessing}"
+            VerticalAlignment="Bottom" />
     </Grid>
 
 </Window>
