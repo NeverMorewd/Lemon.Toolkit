@@ -7,6 +7,7 @@ using Lemon.ModuleNavigation.Abstracts;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
 using Lemon.Toolkit.ViewModels;
+using Lemon.Toolkit.Views;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -28,7 +29,7 @@ namespace Lemon.Toolkit.Shells
         private readonly ITopLevelProvider _topLevelProvider;
         private readonly ConsoleStreamService _consoleService;
         private readonly IObservable<ShellParamModel> _shellService;
-        private readonly Microsoft.Extensions.Logging.ILogger _logger;
+        private readonly ILogger _logger;
         private readonly SourceCache<LogEntry, Guid> _outputsCache = new(x => x.Id);
         private readonly ReadOnlyObservableCollection<LogEntry> _outputs;
         private readonly INavigationService _navigationService;
@@ -154,7 +155,7 @@ namespace Lemon.Toolkit.Shells
 
         private void ShowLogDetails(LogEntry logEntry)
         {
-            var dialog = new Window
+            var dialog = new CRTWindow
             {
                 Title = "Log Details",
                 Width = 600,
@@ -162,6 +163,8 @@ namespace Lemon.Toolkit.Shells
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Content = new StackPanel
                 {
+                    Spacing = 2,
+                    Orientation = Avalonia.Layout.Orientation.Vertical,
                     Margin = new Thickness(10),
                     Children =
                     {

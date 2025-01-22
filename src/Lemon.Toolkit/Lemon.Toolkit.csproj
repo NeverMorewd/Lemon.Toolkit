@@ -55,6 +55,11 @@
 	<RdXmlFile Include="rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\CRTWindow.axaml.cs">
+      <DependentUpon>CRTWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <None Update="source.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
