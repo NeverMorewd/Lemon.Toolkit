@@ -10,7 +10,7 @@ using Lemon.HandyLib.Logging.Enrichers;
 
 namespace Lemon.HandyLib.Logging
 {
-    public static class LoggingExtensions
+    public static class Extensions
     {
         public static void LogDebug(
            this ILogger logger,
@@ -130,6 +130,20 @@ namespace Lemon.HandyLib.Logging
             return source;
         }
 
+        public static string ToShortString(this LogLevel logLevel)
+        {
+            return logLevel switch
+            {
+                LogLevel.Trace => "TRA",
+                LogLevel.Debug => "DBG",
+                LogLevel.Information => "INF",
+                LogLevel.Warning => "WAR",
+                LogLevel.Error => "ERR",
+                LogLevel.Critical => "CRI",
+                LogLevel.None => "NON",
+                _ => "DBG",
+            };
+        }
         public static KeyValuePair<TKey, TValue> Tag<TKey, TValue>(this TValue value, TKey key)
         {
             return new KeyValuePair<TKey, TValue>(key, value);

@@ -1,57 +1,151 @@
-﻿using System;
+﻿using Lemon.HandyLib.Logging.Enrichers;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace Lemon.HandyLib.Logging.Definitions
 {
     public class LogEntry
     {
-        public Guid Id { get; set; }
-        public DateTime Timestamp { get; set; }
-        public string Level { get; set; }
-        public int ProcessId { get; set; }
-        public int ThreadId { get; set; }
-        public string Interval { get; set; }
-        public string Caller { get; set; }
-        public string Message { get; set; }
-        public string? Exception { get; set; }
-
-        public static LogEntry ParseLog(string logLine)
+        private static DateTime lastLogTime;
+        private static int? processId;
+        public LogEntry(
+            Guid id,
+            DateTime timestamp,
+            string level,
+            int processId,
+            int threadId,
+            string intervalGraph,
+            string interval,
+            string caller,
+            string message,
+            string? exception = null,
+            LogEntryType type = LogEntryType.Log)
         {
-            if (string.IsNullOrEmpty(logLine))
-                throw new ArgumentException("Log line cannot be null or empty.");
+            Id = id;
+            Timestamp = timestamp;
+            Level = level;
+            ProcessId = processId;
+            ThreadId = threadId;
+            IntervalGraph = intervalGraph;
+            Interval = interval;
+            Caller = caller;
+            Message = message;
+            Exception = exception;
+            Type = type;
+        }
+        public Guid Id { get; private set; }
+        public DateTime Timestamp { get; private set; }
+        public string Level { get; private set; }
+        public int ProcessId { get; private set; }
+        public int ThreadId { get; private set; }
+        public string IntervalGraph { get; private set; }
+        public string Interval { get; private set; }
+        public string Caller { get; private set; }
+        public string Message { get; private set; }
+        public string? Exception { get; private set; }
+        public LogEntryType Type { get; private set; } = LogEntryType.Log;
 
-            var parts = logLine.Split('|');
-
-            if (parts.Length < 7)
+        private static int CurrentProcessId
+        {
+            get
             {
-                return new LogEntry
+#if NET6_0_OR_GREATER
+                return Environment.ProcessId;
+#else
+                if (!processId.HasValue)
                 {
-                    Id = Guid.NewGuid(),
-                    Timestamp = DateTime.Now,
-                    Level = "Trace",
-                    ProcessId = -1,
-                    ThreadId = Environment.CurrentManagedThreadId,
-                    Interval = "",
-                    Caller = "",
-                    Message = logLine,
-                    Exception = null
-                };
-            }
-            else
-            {
-                return new LogEntry
-                {
-                    Id = Guid.NewGuid(),
-                    Timestamp = DateTime.ParseExact(parts[0].Trim(), "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-                    Level = parts[1].Trim(),
-                    ProcessId = int.Parse(parts[2].Trim()),
-                    ThreadId = int.Parse(parts[3].Trim()),
-                    Interval = parts[4].Trim(),
-                    Caller = parts[5].Trim(),
-                    Message = parts[6].Trim(),
-                    Exception = parts.Length > 7 ? parts[7].Trim() : null // 异常信息是可选的
-                };
+                    using var process = Process.GetCurrentProcess();
+                    processId = process.Id;
+                }
+                return processId.Value;
+#endif
             }
         }
+
+        
+        public static LogEntry ParseLog(string logLine, DateTime? timeStamp = null,  int? threadId = null,  LogEntryType logEntryType = LogEntryType.Log)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(logLine))
+                {
+                    logLine = "null";
+                }
+                if (!threadId.HasValue)
+                {
+                    threadId = Environment.CurrentManagedThreadId;
+                }
+                if (!timeStamp.HasValue)
+                {
+                    timeStamp = DateTime.Now;
+                }
+
+                var interval = timeStamp.Value - lastLogTime;
+                var intervalTuple = TimeIntervalEnricher.GenerateGraph(interval);
+
+                if (logEntryType == LogEntryType.ConsoleIn)
+                {
+                    return new LogEntry(
+                        id: Guid.NewGuid(),
+                        timestamp: timeStamp.Value,
+                        level: LogLevel.Information.ToShortString(),
+                        processId: CurrentProcessId,
+                        threadId: threadId.Value,
+                        intervalGraph: intervalTuple.Graph,
+                        interval: intervalTuple.Interval,
+                        caller: nameof(Console),
+                        message: logLine,
+                        exception: null,
+                        type: LogEntryType.ConsoleIn
+                    );
+                }
+                var parts = logLine.Split('|');
+
+                if (parts.Length < 8)
+                {
+                    return new LogEntry(
+                        id: Guid.NewGuid(),
+                        timestamp: timeStamp.Value,
+                        level: LogLevel.Information.ToShortString(),
+                        processId: CurrentProcessId,
+                        threadId: threadId.Value,
+                        intervalGraph: intervalTuple.Graph,
+                        interval: intervalTuple.Interval,
+                        caller: nameof(Console),
+                        message: logLine,
+                        exception: null,
+                        type: LogEntryType.ConsoleOut
+                    );
+                }
+                else
+                {
+                    return new LogEntry(
+                        id: Guid.NewGuid(),
+                        timestamp: DateTime.ParseExact(parts[0].Trim(), "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
+                        level: parts[1].Trim(),
+                        processId: int.Parse(parts[2].Trim()),
+                        threadId: int.Parse(parts[3].Trim()),
+                        intervalGraph: parts[4].Trim(),
+                        interval: parts[5].Trim(),
+                        caller: parts[6].Trim(),
+                        message: parts[7].Trim(),
+                        exception: parts.Length > 8 ? parts[8].Trim() : null,
+                        type: logEntryType
+                    );
+                }
+            }
+            finally
+            {
+                lastLogTime = DateTime.Now;
+            }
+        }
+    }
+    public enum LogEntryType
+    {
+        ConsoleOut,
+        ConsoleIn,
+        Log,
     }
 }

@@ -1,15 +1,13 @@
-﻿using Avalonia.Controls;
-using Avalonia;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
-using Avalonia.Controls.Shapes;
-using Avalonia.Media;
 using DynamicData;
 using Lemon.HandyLib.Logging.Definitions;
 using Lemon.ModuleNavigation.Abstracts;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
-using Lemon.Toolkit.Services;
 using Lemon.Toolkit.ViewModels;
+using Lemon.Toolkit.Views;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -86,6 +84,7 @@ namespace Lemon.Toolkit.Shells
                 _topLevelProvider.NotificationManager!.Show(new Notification("Success", "Copied!", NotificationType.Success));
             });
             ExpandCommand = ReactiveCommand.Create<LogEntry>(ShowLogDetails);
+            ExecuteCommand = ReactiveCommand.CreateFromTask<string?>(CommandExecuteAync);
             var valueChangedCleanup = this.WhenAnyValue(x => x.ConsoleIsExpanded)
                 .Subscribe(c =>
                 {
@@ -97,7 +96,7 @@ namespace Lemon.Toolkit.Shells
             _consoleService
                  .OutputStream
                  .Merge(_consoleService.ErrorStream)
-                 .Select(line=>LogEntry.ParseLog(line))
+                 .Select(line => LogEntry.ParseLog(line, threadId: Environment.CurrentManagedThreadId))
                  .ObserveOn(RxApp.MainThreadScheduler)
                  .Subscribe(
                      log =>
@@ -135,6 +134,7 @@ namespace Lemon.Toolkit.Shells
             set;
         }
         public ReactiveCommand<LogEntry, Unit> ExpandCommand { get; }
+        public ReactiveCommand<string?, Unit> ExecuteCommand { get; }
         public ReadOnlyObservableCollection<LogEntry> LogEntries
         {
             get => _outputs;
@@ -155,7 +155,7 @@ namespace Lemon.Toolkit.Shells
 
         private void ShowLogDetails(LogEntry logEntry)
         {
-            var dialog = new Window
+            var dialog = new CRTWindow
             {
                 Title = "Log Details",
                 Width = 600,
@@ -163,6 +163,8 @@ namespace Lemon.Toolkit.Shells
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Content = new StackPanel
                 {
+                    Spacing = 2,
+                    Orientation = Avalonia.Layout.Orientation.Vertical,
                     Margin = new Thickness(10),
                     Children =
                     {
@@ -178,6 +180,26 @@ namespace Lemon.Toolkit.Shells
                 }
             };
             dialog.ShowDialog(_topLevelProvider.MainWindow);
+        }
+
+        private Task CommandExecuteAync(string? commandLine)
+        {
+            var timeStamp = DateTime.Now;
+            Console.WriteLine($"CommandExecuteAync:{timeStamp}");
+            return Task.Run(() =>
+            {
+                if (commandLine == null)
+                {
+                    return;
+                }
+
+                _outputsCache.AddOrUpdate(LogEntry.ParseLog(commandLine,
+                    timeStamp,
+                    Environment.CurrentManagedThreadId, 
+                    LogEntryType.ConsoleIn));
+
+                Console.WriteLine($"handle:{commandLine}");
+            });
         }
         public override void Dispose()
         {

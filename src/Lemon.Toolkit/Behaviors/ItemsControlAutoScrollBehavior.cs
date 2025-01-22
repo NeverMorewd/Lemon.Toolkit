@@ -1,5 +1,6 @@
-﻿using Avalonia.Controls;
-using Avalonia.LogicalTree;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactivity;
 using System.Collections.Specialized;
 
@@ -8,6 +9,17 @@ namespace Lemon.Toolkit.Behaviors
     public class ItemsControlAutoScrollBehavior : Behavior<ItemsControl>
     {
         private ItemsControl? _currentControl;
+        private ScrollViewer? _scrollViewer;
+
+        public static readonly StyledProperty<AutoScrollMode> AutoScrollModeProperty =
+            AvaloniaProperty.Register<ItemsControlAutoScrollBehavior, AutoScrollMode>(
+                nameof(AutoScrollMode),
+                AutoScrollMode.ToBottom);
+        public AutoScrollMode AutoScrollMode
+        {
+            get => GetValue(AutoScrollModeProperty);
+            set => SetValue(AutoScrollModeProperty, value);
+        }
 
         protected override void OnAttached()
         {
@@ -19,9 +31,20 @@ namespace Lemon.Toolkit.Behaviors
 
         private void CollectionChangedHandler(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action != NotifyCollectionChangedAction.Add) return;
-            var scrollViewer = _currentControl.FindLogicalAncestorOfType<ScrollViewer>(includeSelf: false);
-            scrollViewer?.ScrollToEnd();
+            if (AutoScrollMode == AutoScrollMode.None) return;
+
+            _scrollViewer ??= _currentControl?.FindDescendantOfType<ScrollViewer>(includeSelf: true);
+            if (_scrollViewer == null) return;
+
+            switch (AutoScrollMode)
+            {
+                case AutoScrollMode.ToBottom:
+                    _scrollViewer.ScrollToEnd();
+                    break;
+                case AutoScrollMode.ToTop:
+                    _scrollViewer.ScrollToHome();
+                    break;
+            }
         }
 
         protected override void OnDetaching()
@@ -32,5 +55,11 @@ namespace Lemon.Toolkit.Behaviors
                 _currentControl.ItemsView.CollectionChanged -= CollectionChangedHandler;
             }
         }
+    }
+    public enum AutoScrollMode
+    {
+        None,
+        ToBottom,
+        ToTop
     }
 }

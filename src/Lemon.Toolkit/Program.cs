@@ -26,6 +26,7 @@ namespace Lemon.Toolkit
         [SupportedOSPlatform("windows")]
         public static void Main(string[] args)
         {
+            var consoleStreamService = new ConsoleStreamService();
             SerilLogHelper.Config("Lemon.Toolkit");
             SerilLogHelper.Information("====𝕃𝕖𝕞𝕠𝕟====");
             var hostBuilder = Host.CreateApplicationBuilder();
@@ -58,7 +59,7 @@ namespace Lemon.Toolkit
             hostBuilder.Services.AddView<ChromePreferenceInspector, ChromePreferenceViewModel>(nameof(ChromePreferenceInspector));
 
             // services
-            hostBuilder.Services.AddSingleton<ConsoleStreamService>();
+            hostBuilder.Services.AddSingleton(consoleStreamService);
             hostBuilder.Services.AddSingleton<FileInspectorService>();
             hostBuilder.Services.AddSingleton<ITopLevelProvider, TopLevelProvider>();
             hostBuilder.Services.AddSingleton<ShellService>();

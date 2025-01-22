@@ -2,6 +2,8 @@
     x:Class="Lemon.Toolkit.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="using:Lemon.Toolkit.Behaviors"
+    xmlns:converters="using:Lemon.Toolkit.Converters"
     xmlns:local="using:Lemon.Toolkit"
     xmlns:semi="https://irihi.tech/semi"
     RequestedThemeVariant="Dark">
@@ -9,6 +11,229 @@
 
     <Application.Styles>
         <semi:SemiTheme Locale="zh-cn" />
+
+        <Style Selector="Button.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+        <Style Selector="Button.RetroDanger">
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroImportantForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroImportantForegroundBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+        <Style Selector="TextBox.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="BorderThickness" Value="0,0,0,2" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="CaretBrush" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+
+        <Style Selector="TextBox.Retro:focus /template/ Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+        </Style>
+
+        <Style Selector="TextBox.Retro:pointerover /template/ Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroTransparentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+
+        <Style Selector="ComboBox.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+
+        <Style Selector="TabItem.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+
+        <Style Selector="Expander.Retro">
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource RetroFontFamily}" />
+            <Setter Property="FontSize" Value="{DynamicResource RetroFontSize}" />
+        </Style>
+        <Style Selector="Path.Retro">
+            <Setter Property="Stroke" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Fill" Value="{DynamicResource RetroRegularForegroundBrush}" />
+        </Style>
+        <Style Selector="TextBlock.blink">
+            <Style.Animations>
+                <Animation IterationCount="INFINITE" Duration="0:0:1">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="1.0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="Opacity" Value="0.3" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1.0" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.screen-flicker">
+            <Style.Animations>
+                <Animation IterationCount="INFINITE" Duration="0:0:0.1">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="1.0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="Opacity" Value="0.9" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1.0" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.scan-line">
+            <Setter Property="BoxShadow" Value="0 0 10 0 #80000000" />
+            <Setter Property="Effect">
+                <BlurEffect Radius="2" />
+            </Setter>
+            <Style.Animations>
+                <Animation IterationCount="INFINITE" Duration="0:0:2">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Margin" Value="5,-10,5,0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Margin" Value="5,600,5,0" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Window.Retro">
+            <Setter Property="SystemDecorations" Value="None" />
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="behaviors:HandyWindowBehavior.IsDragEnabled" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                            <Border
+                                Margin="5"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BoxShadow="0 0 2 2 #BFFF00"
+                                Classes="screen-flicker"
+                                CornerRadius="5">
+                                <Border.Effect>
+                                    <BlurEffect Radius="0.8" />
+                                </Border.Effect>
+
+                                <Grid>
+                                    <Canvas
+                                        Margin="1"
+                                        behaviors:NoiseEffect.DotCount="100"
+                                        behaviors:NoiseEffect.DotSize="2"
+                                        behaviors:NoiseEffect.IsEnabled="True"
+                                        behaviors:NoiseEffect.UpdateInterval="0:0:0.1"
+                                        Background="Transparent" />
+
+                                    <Grid Margin="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <DockPanel Grid.Row="0" Margin="4">
+                                            <Button
+                                                behaviors:HandyWindowBehavior.IsShutdownButton="True"
+                                                Classes="Retro"
+                                                Content="x"
+                                                DockPanel.Dock="Right" />
+                                            <TextBlock
+                                                Classes="blink"
+                                                DockPanel.Dock="Left"
+                                                FontSize="20"
+                                                Text="{TemplateBinding Title}" />
+                                        </DockPanel>
+                                        <DockPanel Grid.Row="1" LastChildFill="True">
+                                            <ContentPresenter Content="{TemplateBinding Content}">
+                                                <ContentPresenter.Resources />
+                                            </ContentPresenter>
+                                        </DockPanel>
+                                        <DockPanel
+                                            Grid.Row="2"
+                                            Margin="0,20,0,0"
+                                            LastChildFill="True">
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                Classes="blink"
+                                                DockPanel.Dock="Left"
+                                                Text=">" />
+                                            <TextBox
+                                                VerticalAlignment="Center"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                CaretBrush="Transparent"
+                                                Classes="Retro"
+                                                DockPanel.Dock="Right" />
+                                        </DockPanel>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                            <Border
+                                Height="3"
+                                Margin="5,0,5,0"
+                                VerticalAlignment="Top"
+                                Background="#882ECC71"
+                                Classes="scan-line">
+                                <Border.Effect>
+                                    <BlurEffect Radius="3" />
+                                </Border.Effect>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
     </Application.Styles>
-    <Application.Resources />
+    <Application.Resources>
+        <Color x:Key="BlackColor">Black</Color>
+        <Color x:Key="LimeColor">Lime</Color>
+        <Color x:Key="LimeColorRgb">#BFFF00</Color>
+        <Color x:Key="DeepSkyBlueColor">#00BFFF</Color>
+        <Color x:Key="AmberColor">#FF7F00</Color>
+        <Color x:Key="RedColor">#FF4444</Color>
+        <Color x:Key="TransparentColor">Transparent</Color>
+        <SolidColorBrush x:Key="RetroMainBackgroundBrush" Color="{DynamicResource BlackColor}" />
+        <SolidColorBrush x:Key="RetroRegularForegroundBrush" Color="{DynamicResource LimeColor}" />
+        <SolidColorBrush x:Key="RetroInputForegroundBrush" Color="{DynamicResource DeepSkyBlueColor}" />
+        <SolidColorBrush x:Key="RetroImportantForegroundBrush" Color="{DynamicResource AmberColor}" />
+        <SolidColorBrush x:Key="RetroSeriousForegroundBrush" Color="{DynamicResource ErrorRedColor}" />
+        <SolidColorBrush x:Key="RetroBorderBrush" Color="{DynamicResource LimeColor}" />
+        <SolidColorBrush x:Key="RetroTransparentBrush" Color="{DynamicResource TransparentColor}" />
+        <converters:NumberGeneratorConverter x:Key="NumberGeneratorConverter" />
+        <FontFamily x:Key="RetroFontFamily">Courier New</FontFamily>
+        <x:Double x:Key="RetroFontSize">16</x:Double>
+    </Application.Resources>
 </Application>
