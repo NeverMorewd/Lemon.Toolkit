@@ -67,6 +67,7 @@ namespace Lemon.Toolkit
             hostBuilder.Services.AddSingleton<ITopLevelProvider, TopLevelProvider>();
             hostBuilder.Services.AddSingleton<ShellService>();
             hostBuilder.Services.AddSingleton<GitSettingsService>();
+            hostBuilder.Services.AddSingleton<WindowsFeatureService>();
             hostBuilder.Services.AddSingleton<IObservable<ShellParamModel>>(sp => sp.GetRequiredService<ShellService>());
             hostBuilder.Services.AddSingleton<IObserver<ShellParamModel>>(sp => sp.GetRequiredService<ShellService>());
             //
