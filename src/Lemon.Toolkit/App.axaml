@@ -162,7 +162,7 @@
                                         Margin="1"
                                         IsEnabled="True"
                                         NoiseColor="White"
-                                        NoiseCount="10000"
+                                        NoiseCount="3000"
                                         NoiseSize="2"
                                         RefreshInterval="0:0:0.1" />
 

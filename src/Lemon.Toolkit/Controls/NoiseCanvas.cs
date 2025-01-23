@@ -24,15 +24,13 @@ public class NoiseCanvas : Control
     public static readonly StyledProperty<TimeSpan> RefreshIntervalProperty =
         AvaloniaProperty.Register<NoiseCanvas, TimeSpan>(nameof(RefreshInterval), TimeSpan.FromMilliseconds(500));
 
-    private readonly DispatcherTimer _refreshTimer;
+    private DispatcherTimer _refreshTimer;
     private readonly Random _random = new();
     private List<Point> _noisePoints = [];
 
     public NoiseCanvas()
     {
-        _refreshTimer = new DispatcherTimer { Interval = RefreshInterval };
-        _refreshTimer.Tick += (s, _) => RegenerateNoise();
-        _refreshTimer.Start();
+
     }
 
     public int NoiseCount
@@ -66,6 +64,9 @@ public class NoiseCanvas : Control
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        _refreshTimer = new DispatcherTimer { Interval = RefreshInterval };
+        _refreshTimer.Tick += (s, _) => RegenerateNoise();
+        _refreshTimer.Start();
         RegenerateNoise();
     }
     private void RegenerateNoise()

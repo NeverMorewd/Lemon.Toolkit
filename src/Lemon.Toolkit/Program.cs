@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Lemon.HandyLib.Logging;
 using Lemon.Hosting.AvaloniauiDesktop;
@@ -85,6 +86,8 @@ namespace Lemon.Toolkit
                 .UsePlatformDetect()
                 .WithInterFont()
                 .LogToTrace()
-                .UseReactiveUI();
+                .UseReactiveUI()
+             .With(new Win32PlatformOptions { RenderingMode = [Win32RenderingMode.Wgl] })
+             .With(new SkiaOptions { MaxGpuResourceSizeBytes = 256 * 1024 * 1024 });
     }
 }
