@@ -4,6 +4,7 @@ using Avalonia.Controls.Notifications;
 using DynamicData;
 using Lemon.HandyLib.Logging.Definitions;
 using Lemon.ModuleNavigation.Abstracts;
+using Lemon.ModuleNavigation.Core;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
 using Lemon.Toolkit.ViewModels;
@@ -33,15 +34,18 @@ namespace Lemon.Toolkit.Shells
         private readonly SourceCache<LogEntry, Guid> _outputsCache = new(x => x.Id);
         private readonly ReadOnlyObservableCollection<LogEntry> _outputs;
         private readonly INavigationService _navigationService;
-        public MainWindowViewModel(ITopLevelProvider topLevelProvder,
+        private readonly IDialogService _dialogService;
+        public MainWindowViewModel(ITopLevelProvider topLevelProvider,
             ConsoleStreamService consoleService,
             IObservable<ShellParamModel> shellService,
             INavigationService navigationService,
             IServiceProvider serviceProvider,
+            IDialogService dialogService,
             ILogger<MainWindowViewModel> logger)
         {
             _logger = logger;
-            _topLevelProvider = topLevelProvder;
+            _dialogService = dialogService;
+            _topLevelProvider = topLevelProvider;
             _consoleService = consoleService;
             _shellService = shellService;
             _navigationService = navigationService;
@@ -155,32 +159,33 @@ namespace Lemon.Toolkit.Shells
 
         private void ShowLogDetails(LogEntry logEntry)
         {
-            var dialog = new CRTWindow
-            {
-                Title = "Log Details",
-                Width = 600,
-                Height = 400,
-                WindowState = WindowState.Maximized,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new StackPanel
-                {
-                    Spacing = 2,
-                    Orientation = Avalonia.Layout.Orientation.Vertical,
-                    Margin = new Thickness(10),
-                    Children =
-                    {
-                        new TextBlock { Text = $"Timestamp: {logEntry.Timestamp:yyyy-MM-dd HH:mm:ss.fff}" },
-                        new TextBlock { Text = $"Level: {logEntry.Level}" },
-                        new TextBlock { Text = $"Process ID: {logEntry.ProcessId}" },
-                        new TextBlock { Text = $"Thread ID: {logEntry.ThreadId}" },
-                        new TextBlock { Text = $"Interval: {logEntry.Interval}" },
-                        new TextBlock { Text = $"Caller: {logEntry.Caller}" },
-                        new TextBlock { Text = $"Message: {logEntry.Message}" },
-                        new TextBlock { Text = $"Exception: {logEntry.Exception}" }
-                    }
-                }
-            };
-            dialog.ShowDialog(_topLevelProvider.MainWindow);
+            _dialogService.Show(nameof(LogDetailView), nameof(CRTWindow));
+            //var dialog = new CRTWindow
+            //{
+            //    Title = "Log Details",
+            //    Width = 600,
+            //    Height = 400,
+            //    WindowState = WindowState.Maximized,
+            //    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            //    Content = new StackPanel
+            //    {
+            //        Spacing = 2,
+            //        Orientation = Avalonia.Layout.Orientation.Vertical,
+            //        Margin = new Thickness(10),
+            //        Children =
+            //        {
+            //            new TextBlock { Text = $"Timestamp: {logEntry.Timestamp:yyyy-MM-dd HH:mm:ss.fff}" },
+            //            new TextBlock { Text = $"Level: {logEntry.Level}" },
+            //            new TextBlock { Text = $"Process ID: {logEntry.ProcessId}" },
+            //            new TextBlock { Text = $"Thread ID: {logEntry.ThreadId}" },
+            //            new TextBlock { Text = $"Interval: {logEntry.Interval}" },
+            //            new TextBlock { Text = $"Caller: {logEntry.Caller}" },
+            //            new TextBlock { Text = $"Message: {logEntry.Message}" },
+            //            new TextBlock { Text = $"Exception: {logEntry.Exception}" }
+            //        }
+            //    }
+            //};
+            //dialog.ShowDialog(_topLevelProvider.MainWindow);
         }
 
         private Task CommandExecuteAync(string? commandLine)

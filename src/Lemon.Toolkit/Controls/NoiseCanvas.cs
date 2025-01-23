@@ -2,12 +2,13 @@
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Lemon.Toolkit.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lemon.Toolkit.Extensions;
 
-namespace  Lemon.Toolkit.Controls;
+namespace Lemon.Toolkit.Controls;
+
 public class NoiseCanvas : Control
 {
     // Dependency properties
@@ -15,21 +16,23 @@ public class NoiseCanvas : Control
         AvaloniaProperty.Register<NoiseCanvas, int>(nameof(NoiseCount), 100);
 
     public static readonly StyledProperty<double> NoiseSizeProperty =
-        AvaloniaProperty.Register<NoiseCanvas, double>(nameof(NoiseSize), 5.0);
+        AvaloniaProperty.Register<NoiseCanvas, double>(nameof(NoiseSize), 1.0);
 
     public static readonly StyledProperty<IBrush> NoiseColorProperty =
-        AvaloniaProperty.Register<NoiseCanvas, IBrush>(nameof(NoiseColor), Brushes.Black);
+        AvaloniaProperty.Register<NoiseCanvas, IBrush>(nameof(NoiseColor), Brushes.White);
 
     public static readonly StyledProperty<TimeSpan> RefreshIntervalProperty =
         AvaloniaProperty.Register<NoiseCanvas, TimeSpan>(nameof(RefreshInterval), TimeSpan.FromMilliseconds(500));
 
-    private DispatcherTimer _refreshTimer;
-    private readonly Random _random = new Random();
-    private List<Point> _noisePoints = new();
+    private readonly DispatcherTimer _refreshTimer;
+    private readonly Random _random = new();
+    private List<Point> _noisePoints = [];
 
     public NoiseCanvas()
     {
-
+        _refreshTimer = new DispatcherTimer { Interval = RefreshInterval };
+        _refreshTimer.Tick += (s, _) => RegenerateNoise();
+        _refreshTimer.Start();
     }
 
     public int NoiseCount
@@ -63,21 +66,15 @@ public class NoiseCanvas : Control
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        var id = Environment.CurrentManagedThreadId;
-        _refreshTimer = new DispatcherTimer { Interval = RefreshInterval };
-        _refreshTimer.Tick += (s, _) => RegenerateNoise();
-        _refreshTimer.Start();
         RegenerateNoise();
     }
     private void RegenerateNoise()
     {
-        var a = this.Height;
-        var id = Environment.CurrentManagedThreadId;
         if (Width <= 0 || Height <= 0)
             return;
 
         _noisePoints = Enumerable.Range(0, NoiseCount)
-            .Select(_ => new Point(_random.NextDouble(0.01,0.99,2) * Width, _random.NextDouble(0.01,0.99,2) * Height))
+            .Select(_ => new Point(_random.NextDouble(0.01, 0.99, 2) * Width, _random.NextDouble(0.01, 0.99, 2) * Height))
             .ToList();
 
         InvalidateVisual();
@@ -89,7 +86,6 @@ public class NoiseCanvas : Control
 
         if (_noisePoints.Count == 0)
             return;
-
         foreach (var point in _noisePoints)
         {
             context.DrawRectangle(NoiseColor, null, new Rect(point.X, point.Y, NoiseSize, NoiseSize));

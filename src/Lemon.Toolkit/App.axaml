@@ -1,12 +1,12 @@
 <Application
-    RequestedThemeVariant="Dark"
     x:Class="Lemon.Toolkit.App"
     xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:Lemon.Toolkit.Behaviors"
     xmlns:controls="clr-namespace:Lemon.Toolkit.Controls"
     xmlns:converters="using:Lemon.Toolkit.Converters"
     xmlns:semi="https://irihi.tech/semi"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    RequestedThemeVariant="Dark">
     <Application.Styles>
         <semi:SemiTheme Locale="zh-cn" />
 
@@ -87,7 +87,7 @@
         </Style>
         <Style Selector="TextBlock.blink">
             <Style.Animations>
-                <Animation Duration="0:0:1" IterationCount="INFINITE">
+                <Animation IterationCount="INFINITE" Duration="0:0:1">
                     <KeyFrame Cue="0%">
                         <Setter Property="Opacity" Value="1.0" />
                     </KeyFrame>
@@ -102,7 +102,7 @@
         </Style>
         <Style Selector="Border.screen-flicker">
             <Style.Animations>
-                <Animation Duration="0:0:0.1" IterationCount="INFINITE">
+                <Animation IterationCount="INFINITE" Duration="0:0:0.1">
                     <KeyFrame Cue="0%">
                         <Setter Property="Opacity" Value="1.0" />
                     </KeyFrame>
@@ -121,7 +121,7 @@
                 <BlurEffect Radius="2" />
             </Setter>
             <Style.Animations>
-                <Animation Duration="0:0:2" IterationCount="INFINITE">
+                <Animation IterationCount="INFINITE" Duration="0:0:2">
                     <KeyFrame Cue="0%">
                         <Setter Property="Margin" Value="5,-10,5,0" />
                     </KeyFrame>
@@ -144,27 +144,27 @@
                     <ControlTemplate>
                         <Grid>
                             <Border
+                                Margin="5"
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 BoxShadow="0 0 2 2 #BFFF00"
                                 Classes="screen-flicker"
-                                CornerRadius="5"
-                                Margin="5">
+                                CornerRadius="5">
                                 <Border.Effect>
                                     <BlurEffect Radius="0.8" />
                                 </Border.Effect>
 
                                 <Grid>
                                     <controls:NoiseCanvas
+                                        Width="{TemplateBinding Width}"
                                         Height="{TemplateBinding Height}"
-                                        IsEnabled="True"
                                         Margin="1"
+                                        IsEnabled="True"
                                         NoiseColor="White"
-                                        NoiseCount="1000"
+                                        NoiseCount="10000"
                                         NoiseSize="2"
-                                        RefreshInterval="0:0:0.1"
-                                        Width="{TemplateBinding Width}" />
+                                        RefreshInterval="0:0:0.1" />
 
                                     <Grid Margin="1">
                                         <Grid.RowDefinitions>
@@ -175,10 +175,10 @@
 
                                         <DockPanel Grid.Row="0" Margin="4">
                                             <Button
+                                                behaviors:HandyWindowBehavior.IsShutdownButton="True"
                                                 Classes="Retro"
                                                 Content="x"
-                                                DockPanel.Dock="Right"
-                                                behaviors:HandyWindowBehavior.IsShutdownButton="True" />
+                                                DockPanel.Dock="Right" />
                                             <TextBlock
                                                 Classes="blink"
                                                 DockPanel.Dock="Left"
@@ -192,30 +192,30 @@
                                         </DockPanel>
                                         <DockPanel
                                             Grid.Row="2"
-                                            LastChildFill="True"
-                                            Margin="0,20,0,0">
+                                            Margin="0,20,0,0"
+                                            LastChildFill="True">
                                             <TextBlock
+                                                VerticalAlignment="Center"
                                                 Classes="blink"
                                                 DockPanel.Dock="Left"
-                                                Text="&gt;"
-                                                VerticalAlignment="Center" />
+                                                Text="&gt;" />
                                             <TextBox
+                                                VerticalAlignment="Center"
                                                 Background="Transparent"
                                                 BorderThickness="0,0,0,0"
                                                 CaretBrush="Transparent"
                                                 Classes="Retro_Console"
-                                                DockPanel.Dock="Right"
-                                                VerticalAlignment="Center" />
+                                                DockPanel.Dock="Right" />
                                         </DockPanel>
                                     </Grid>
                                 </Grid>
                             </Border>
                             <Border
-                                Background="#882ECC71"
-                                Classes="scan-line"
                                 Height="3"
                                 Margin="5,0,5,0"
-                                VerticalAlignment="Top">
+                                VerticalAlignment="Top"
+                                Background="#882ECC71"
+                                Classes="scan-line">
                                 <Border.Effect>
                                     <BlurEffect Radius="3" />
                                 </Border.Effect>
@@ -241,13 +241,13 @@
         <Color x:Key="AmberColor">#FF7F00</Color>
         <Color x:Key="RedColor">#FF4444</Color>
         <Color x:Key="TransparentColor">Transparent</Color>
-        <SolidColorBrush Color="{DynamicResource BlackColor}" x:Key="RetroMainBackgroundBrush" />
-        <SolidColorBrush Color="{DynamicResource LimeColor}" x:Key="RetroRegularForegroundBrush" />
-        <SolidColorBrush Color="{DynamicResource DeepSkyBlueColor}" x:Key="RetroInputForegroundBrush" />
-        <SolidColorBrush Color="{DynamicResource AmberColor}" x:Key="RetroImportantForegroundBrush" />
-        <SolidColorBrush Color="{DynamicResource ErrorRedColor}" x:Key="RetroSeriousForegroundBrush" />
-        <SolidColorBrush Color="{DynamicResource LimeColor}" x:Key="RetroBorderBrush" />
-        <SolidColorBrush Color="{DynamicResource TransparentColor}" x:Key="RetroTransparentBrush" />
+        <SolidColorBrush x:Key="RetroMainBackgroundBrush" Color="{DynamicResource BlackColor}" />
+        <SolidColorBrush x:Key="RetroRegularForegroundBrush" Color="{DynamicResource LimeColor}" />
+        <SolidColorBrush x:Key="RetroInputForegroundBrush" Color="{DynamicResource DeepSkyBlueColor}" />
+        <SolidColorBrush x:Key="RetroImportantForegroundBrush" Color="{DynamicResource AmberColor}" />
+        <SolidColorBrush x:Key="RetroSeriousForegroundBrush" Color="{DynamicResource ErrorRedColor}" />
+        <SolidColorBrush x:Key="RetroBorderBrush" Color="{DynamicResource LimeColor}" />
+        <SolidColorBrush x:Key="RetroTransparentBrush" Color="{DynamicResource TransparentColor}" />
         <converters:NumberGeneratorConverter x:Key="NumberGeneratorConverter" />
         <FontFamily x:Key="RetroFontFamily">Courier New</FontFamily>
         <x:Double x:Key="RetroFontSize">16</x:Double>

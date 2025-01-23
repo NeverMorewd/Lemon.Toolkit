@@ -1,12 +1,9 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
-using System;
+using Lemon.ModuleNavigation.Avaloniaui.Dialogs;
 
 namespace Lemon.Toolkit.Views;
 
-public partial class CRTWindow : Window
+public partial class CRTWindow : Window, IAvaDialogWindow
 {
 
     public CRTWindow()
