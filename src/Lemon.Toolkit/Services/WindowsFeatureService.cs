@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Lemon.Toolkit.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Microsoft.Win32.TaskScheduler;
 using System;
@@ -151,27 +152,21 @@ namespace Lemon.Toolkit.Services
         {
             try
             {
-                using TaskService taskService = new();
-                TaskDefinition taskDefinition = taskService.NewTask();
-                taskDefinition.RegistrationInfo.Author = "Test";
-                taskDefinition.RegistrationInfo.Description = "Temporary task to check permissions";
-
-                taskDefinition.Triggers.Add(new TimeTrigger { StartBoundary = DateTime.Now.AddDays(999) });
-                taskDefinition.Actions.Add(new ExecAction("cmd.exe"));
-
-                var taskId = "TempTask_" + Guid.NewGuid();
-                taskService.RootFolder.RegisterTaskDefinition(taskId, taskDefinition);
-                taskService.RootFolder.DeleteTask(taskId);
-
+                var testName = "CanRegisterTask";
+                CreateTask(testName, Environment.ProcessPath!, "Lemon", 1);
+                _logger.LogInformation($"Create {testName}");
+                DeleteTask(testName);
+                _logger.LogInformation($"Delete {testName}");
                 return true;
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException ex)
             {
+                _logger.LogDebug($"CanRegisterTask Error: {ex}");
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                _logger.LogDebug($"Error: {ex.Message}");
                 return false;
             }
         }

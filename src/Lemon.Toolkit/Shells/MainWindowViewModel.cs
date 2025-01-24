@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using DynamicData;
+using Lemon.HandyLib.HandyServices;
 using Lemon.HandyLib.Logging.Definitions;
 using Lemon.ModuleNavigation.Abstracts;
 using Lemon.ModuleNavigation.Core;

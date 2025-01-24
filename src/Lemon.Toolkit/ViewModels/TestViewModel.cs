@@ -2,6 +2,7 @@
 using Avalonia.Controls.Templates;
 using Lemon.ModuleNavigation.Abstracts;
 using Lemon.Toolkit.Services;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using System;
 using System.Reactive;
@@ -14,19 +15,36 @@ namespace Lemon.Toolkit.ViewModels
     public class TestViewModel : NavigationViewModelBase
     {
         private static readonly TextBlock _text = new() { Text="I am static!" };
-
+        private readonly ILogger _logger;
         private readonly WindowsFeatureService _windowsFeatureService;
-        public TestViewModel(WindowsFeatureService windowsFeatureService)
+        public TestViewModel(WindowsFeatureService windowsFeatureService,ILogger<TestViewModel> logger)
         {
             TestCommand = ReactiveCommand.CreateFromTask(TestCommandAsync);
             _windowsFeatureService = windowsFeatureService;
+            _logger = logger;
         }
 
         private async Task TestCommandAsync()
         {
             await Task.Run(() => 
             {
-                _windowsFeatureService.CreateTask($"Lemon.Test",Environment.ProcessPath!,"Lemon",1);
+                try
+                {
+                    var can = _windowsFeatureService.CanRegisterTask();
+                    _logger.LogDebug($"CanRegisterTask:{can}");
+                    if (can)
+                    {
+                        _windowsFeatureService.CreateTask($"Lemon.Test", Environment.ProcessPath!, "Lemon", 1);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, "TestCommandAsync");
+                    if (ex.InnerException is not null)
+                    {
+                        _logger.LogError(ex.InnerException, "TestCommandAsync");
+                    }
+                }
             });
         }
 

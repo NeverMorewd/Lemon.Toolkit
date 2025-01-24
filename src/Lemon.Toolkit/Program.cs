@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using Lemon.HandyLib.HandyServices;
 using Lemon.HandyLib.Logging;
 using Lemon.Hosting.AvaloniauiDesktop;
 using Lemon.ModuleNavigation;

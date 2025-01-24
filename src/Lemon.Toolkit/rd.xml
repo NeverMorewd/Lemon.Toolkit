@@ -7,6 +7,9 @@
     -->
 	<Application>
 		<Assembly Name="Lemon.Toolkit" Dynamic="Required All"/>
+		<Assembly Name="Lemon.HandyLib" Dynamic="Required All"/>
+		<Assembly Name="System.Security.AccessControl" Dynamic="Required All"/>
+		<Assembly Name="Microsoft.Win32.TaskScheduler" Dynamic="Required All"/>
 		<Assembly Name="Lemon.ModuleNavigation.Avaloniaui" Dynamic="Required All"/>
 		<Assembly Name="Lemon.ModuleNavigation" Dynamic="Required All"/>
 	</Application>
