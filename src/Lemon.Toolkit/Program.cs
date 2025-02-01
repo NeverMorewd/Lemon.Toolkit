@@ -9,6 +9,7 @@ using Lemon.ModuleNavigation.Avaloniaui.Extensions;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
 using Lemon.Toolkit.Services;
+using Lemon.Toolkit.Services.OllamaServices;
 using Lemon.Toolkit.Shells;
 using Lemon.Toolkit.ViewModels;
 using Lemon.Toolkit.Views;
@@ -55,14 +56,19 @@ namespace Lemon.Toolkit
             hostBuilder.Services.AddAvaNavigationSupport();
             hostBuilder.Services.AddAvaDialogWindow<CRTWindow>(nameof(CRTWindow));
             // view
+            hostBuilder.Services.AddView<PlaygroundRenderView, PlaygroundViewModel>(nameof(PlaygroundRenderView));
             hostBuilder.Services.AddView<LogDetailView, LogDetailViewModel>(nameof(LogDetailView));
             hostBuilder.Services.AddView<FileInspectorView, FileInspectorViewModel>(nameof(FileInspectorView));
             hostBuilder.Services.AddView<HomeView, HomeViewModel>(nameof(HomeView));
             hostBuilder.Services.AddView<TestView, TestViewModel>(nameof(TestView));
             hostBuilder.Services.AddView<ToolBoxView, ToolBoxViewModel>(nameof(ToolBoxView));
             hostBuilder.Services.AddView<ChromePreferenceInspector, ChromePreferenceViewModel>(nameof(ChromePreferenceInspector));
-
+            hostBuilder.Services.AddView<PlaygroundOllamaView, PlaygroundViewModel>(nameof(PlaygroundOllamaView));
+            hostBuilder.Services.AddView<OllamaManageView, OllamaManageViewModel>(nameof(OllamaManageView));
             // services
+            hostBuilder.Services.AddHttpClient();
+            hostBuilder.Services.AddSingleton<OllamaServiceFacade>();
+            hostBuilder.Services.AddSingleton<EnvironmentVariableService>();
             hostBuilder.Services.AddSingleton(consoleStreamService);
             hostBuilder.Services.AddSingleton<FileInspectorService>();
             hostBuilder.Services.AddSingleton<ITopLevelProvider, TopLevelProvider>();

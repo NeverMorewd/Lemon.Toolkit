@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lemon.Toolkit", "Lemon.Tool
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lemon.HandyLib", "Lemon.HandyLib\Lemon.HandyLib.csproj", "{B7C020DB-E9B7-4CE9-9EC0-E4A9D51C7CB7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lemon.Toolkit.Test", "Lemon.Toolkit.Test\Lemon.Toolkit.Test.csproj", "{09D3B8CF-4A8D-4584-84DC-06B21938A96A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B7C020DB-E9B7-4CE9-9EC0-E4A9D51C7CB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7C020DB-E9B7-4CE9-9EC0-E4A9D51C7CB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7C020DB-E9B7-4CE9-9EC0-E4A9D51C7CB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09D3B8CF-4A8D-4584-84DC-06B21938A96A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09D3B8CF-4A8D-4584-84DC-06B21938A96A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09D3B8CF-4A8D-4584-84DC-06B21938A96A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09D3B8CF-4A8D-4584-84DC-06B21938A96A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

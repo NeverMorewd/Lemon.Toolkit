@@ -113,6 +113,14 @@ namespace Lemon.Toolkit.Shells
                 cacheCountCleanup,
                 valueChangedCleanup);
 
+            Task.Run(() => 
+            {
+                using (_logger.BeginScope("system info"))
+                {
+                    _logger.LogInformation($"Core count:{Environment.ProcessorCount}");
+                }
+            });
+
         }
         [Reactive]
         public bool IsProcessing

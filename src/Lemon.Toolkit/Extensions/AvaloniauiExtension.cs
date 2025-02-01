@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 
 namespace Lemon.Toolkit.Extensions
@@ -25,5 +26,13 @@ namespace Lemon.Toolkit.Extensions
             }
             return null;
         }
+    
+
+        public static FilePickerFileType FileTypeXml { get; } = new FilePickerFileType("XML document")
+        {
+            Patterns = ["*.xml"],
+            AppleUniformTypeIdentifiers = ["public.xml"],
+            MimeTypes = ["application/xml"]
+        };
     }
 }

@@ -1,6 +1,6 @@
 namespace Lemon.Toolkit.ViewModels;
 
-public class OllamaManageViewModel
+public class OllamaManageViewModel:NavigationViewModelBase
 {
     
 }

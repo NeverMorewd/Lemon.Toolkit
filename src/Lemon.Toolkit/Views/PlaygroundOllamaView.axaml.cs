@@ -1,11 +1,13 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 using Lemon.ModuleNavigation.Abstracts;
 
 namespace Lemon.Toolkit.Views;
 
-public partial class OllamaManageView : UserControl, IView
+public partial class PlaygroundOllamaView : UserControl, IView
 {
-    public OllamaManageView()
+    public PlaygroundOllamaView()
     {
         InitializeComponent();
     }
