@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Lemon.Toolkit.Models;
+using Lemon.Toolkit.Models.Ollama;
 
 namespace Lemon.Toolkit.Services.OllamaServices
 {
