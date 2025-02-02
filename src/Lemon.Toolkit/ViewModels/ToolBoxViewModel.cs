@@ -1,5 +1,4 @@
-﻿using DynamicData.Binding;
-using Lemon.Toolkit.Services;
+﻿using Lemon.Toolkit.Services;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

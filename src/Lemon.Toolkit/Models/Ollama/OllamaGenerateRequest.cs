@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Lemon.Toolkit.Models;
+namespace Lemon.Toolkit.Models.Ollama;
 
-public struct OllamaRequest
+public struct OllamaGenerateRequest
 {
-    public OllamaRequest(
+    public OllamaGenerateRequest(
         string? model,
         string? prompt,
         List<string>? images = null,
@@ -62,5 +62,5 @@ public struct OllamaRequest
 
     [JsonPropertyName("keep_alive")]
     public string? KeepAlive { get; private set; }
-    
+
 }

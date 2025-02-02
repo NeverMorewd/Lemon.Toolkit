@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Lemon.HandyLib.HandyServices;
 using Lemon.HandyLib.Logging;
@@ -20,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Runtime.Versioning;
+using Refit;
 
 namespace Lemon.Toolkit
 {
@@ -66,7 +66,13 @@ namespace Lemon.Toolkit
             hostBuilder.Services.AddView<PlaygroundOllamaView, PlaygroundViewModel>(nameof(PlaygroundOllamaView));
             hostBuilder.Services.AddView<OllamaManageView, OllamaManageViewModel>(nameof(OllamaManageView));
             // services
-            hostBuilder.Services.AddHttpClient();
+            hostBuilder.Services.AddHttpClient("ollama", c =>
+            {
+                c.BaseAddress = new Uri("http://localhost:11434");
+            })
+            .AddTypedClient(c => RestService.For<IOllamaApi>(c));
+
+            //hostBuilder.Services.AddHttpClient();
             hostBuilder.Services.AddSingleton<OllamaServiceFacade>();
             hostBuilder.Services.AddSingleton<EnvironmentVariableService>();
             hostBuilder.Services.AddSingleton(consoleStreamService);

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Lemon.Toolkit.Models;
+namespace Lemon.Toolkit.Models.Ollama;
 
-public struct OllamaResponse
+public struct OllamaGenerateResponse
 {
     [JsonPropertyName("model")]
     public string? Model { get; set; }
