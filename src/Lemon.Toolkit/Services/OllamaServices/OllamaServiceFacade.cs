@@ -5,6 +5,8 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Lemon.Toolkit.Models;
 using Lemon.Toolkit.Models.Ollama;
+using System.Drawing;
+using System.Reflection;
 
 namespace Lemon.Toolkit.Services.OllamaServices
 {
@@ -14,16 +16,19 @@ namespace Lemon.Toolkit.Services.OllamaServices
         private readonly HttpClient _httpClient;
         private readonly IOllamaApi _ollamaApi;
         private const string CurrentModelName = "qwen2:7b";
+        private readonly OllamaFunctionService _ollamaFunctionService;
 
         private readonly string test =
             "(Invoke-WebRequest -method POST -Body '{\"model\":\"llama3.2\", \"prompt\":\"Why is the sky blue?\", \"stream\": false}' -uri http://localhost:11434/api/generate ).Content | ConvertFrom-json";
 
         public OllamaServiceFacade(IHttpClientFactory httpClientFactory, 
-            IOllamaApi ollamaApi,  
+            IOllamaApi ollamaApi,
+            OllamaFunctionService ollamaFunctionService, 
             ILogger<OllamaServiceFacade> logger)
         {
             _logger = logger;
             _ollamaApi = ollamaApi;
+            _ollamaFunctionService = ollamaFunctionService;
             _httpClient = httpClientFactory.CreateClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(3);
         }
@@ -61,6 +66,11 @@ namespace Lemon.Toolkit.Services.OllamaServices
                 _logger.LogError(exception, "Ask error");
                 return exception.Message;
             }
+        }
+
+        public async Task<object> Mock(string path)
+        {
+            return await _ollamaFunctionService.MockApi(path);
         }
     }
 }

@@ -41,7 +41,5 @@ namespace Lemon.Toolkit.Services.OllamaServices
         [Get("/api/show")]
         Task<JsonObject> ShowModelInfo([Query] JsonObject request);
 
-        [Get("/health")]
-        Task<JsonObject> HealthCheck();
     }
 }

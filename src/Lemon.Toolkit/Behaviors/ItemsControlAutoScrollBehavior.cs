@@ -33,6 +33,14 @@ namespace Lemon.Toolkit.Behaviors
         {
             if (AutoScrollMode == AutoScrollMode.None) return;
 
+            if(_currentControl is ListBox listBox)
+            {
+                if(listBox.SelectedIndex > -1)
+                {
+                    return;
+                }
+            }
+
             _scrollViewer ??= _currentControl?.FindDescendantOfType<ScrollViewer>(includeSelf: true);
             if (_scrollViewer == null) return;
 

@@ -6,6 +6,7 @@ using Lemon.HandyLib.HandyServices;
 using Lemon.HandyLib.Logging.Definitions;
 using Lemon.ModuleNavigation.Abstracts;
 using Lemon.ModuleNavigation.Core;
+using Lemon.ModuleNavigation.Dialogs;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
 using Lemon.Toolkit.ViewModels;
@@ -168,7 +169,11 @@ namespace Lemon.Toolkit.Shells
 
         private void ShowLogDetails(LogEntry logEntry)
         {
-            _dialogService.Show(nameof(LogDetailView), nameof(CRTWindow));
+            DialogParameters dialogParameters = new()
+            {
+                { "log", logEntry }
+            };
+            _dialogService.Show(nameof(LogDetailView), nameof(CRTWindow), dialogParameters);
             //var dialog = new CRTWindow
             //{
             //    Title = "Log Details",

@@ -160,7 +160,7 @@
                                         Width="{TemplateBinding Width}"
                                         Height="{TemplateBinding Height}"
                                         Margin="1"
-                                        IsEnabled="True"
+                                        IsEnabled="False"
                                         NoiseColor="White"
                                         NoiseCount="3000"
                                         NoiseSize="2"

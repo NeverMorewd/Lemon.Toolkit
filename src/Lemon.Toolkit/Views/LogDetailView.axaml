@@ -4,8 +4,165 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Width="800"
-    Height="450"
     mc:Ignorable="d">
-    Welcome to Avalonia!
+    <Grid Margin="4" ColumnDefinitions="150,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto,Auto">
+        <!--  ID  -->
+        <TextBlock
+			Classes="Retro"
+            Grid.Row="0"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Text="ID:" />
+		<TextBlock
+			Classes="Retro"
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="5,0,0,0"
+            VerticalAlignment="Center"
+            Text="{Binding Log.Id}" />
+        <!--  Timestamp  -->
+		<TextBlock
+			Classes="Retro"
+            Grid.Row="1"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Text="Timestamp:" />
+        <TextBlock
+            Grid.Row="1"
+			Classes="Retro"
+            Grid.Column="1"
+            Margin="5,0,0,0"
+            VerticalAlignment="Center"
+            Text="{Binding Log.Timestamp, StringFormat='yyyy-MM-dd HH:mm:ss.fff'}" />
+        <!--  Level  -->
+        <TextBlock
+            Grid.Row="2"
+			Classes="Retro"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Text="Level:" />
+        <TextBlock
+            Grid.Row="2"
+			Classes="Retro"
+            Grid.Column="1"
+            Margin="5,0,0,0"
+            VerticalAlignment="Center"
+            Text="{Binding Log.Level}" />
+        <!--  Process ID  -->
+        <TextBlock
+            Grid.Row="3"
+            Grid.Column="0"
+			Classes="Retro"
+            VerticalAlignment="Center"
+            Text="Process ID:" />
+        <TextBlock
+            Grid.Row="3"
+			Classes="Retro"
+            Grid.Column="1"
+            Margin="5,0,0,0"
+            VerticalAlignment="Center"
+            Text="{Binding Log.ProcessId}" />
+        <!--  Thread ID  -->
+        <TextBlock
+            Grid.Row="4"
+            Grid.Column="0"
+			Classes="Retro"
+            VerticalAlignment="Center"
+            Text="Thread ID:" />
+        <TextBlock
+            Grid.Row="4"
+            Grid.Column="1"
+			Classes="Retro"
+            Margin="5,0,0,0"
+            VerticalAlignment="Center"
+            Text="{Binding Log.ThreadId}" />
+        <!--  Interval Graph  -->
+        <TextBlock
+            Grid.Row="5"
+            Grid.Column="0"
+			Classes="Retro"
+            VerticalAlignment="Center"
+            Text="Interval Graph:" />
+        <TextBlock
+            Grid.Row="5"
+            Grid.Column="1"
+			Classes="Retro"
+            Margin="5,0,0,0"
+            VerticalAlignment="Center"
+            Text="{Binding Log.IntervalGraph}" />
+        <!--  Interval  -->
+        <TextBlock
+            Grid.Row="6"
+            Grid.Column="0"
+			Classes="Retro"
+            VerticalAlignment="Center"
+            Text="Interval:" />
+        <TextBlock
+            Grid.Row="6"
+            Grid.Column="1"
+            Margin="5,0,0,0"
+			Classes="Retro"
+            VerticalAlignment="Center"
+            Text="{Binding Log.Interval}" />
+        <!--  Caller  -->
+        <TextBlock
+            Grid.Row="7"
+			Classes="Retro"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Text="Caller:" />
+        <TextBlock
+            Grid.Row="7"
+            Grid.Column="1"
+            Margin="5,0,0,0"
+			Classes="Retro"
+            VerticalAlignment="Center"
+            Text="{Binding Log.Caller}" />
+        <!--  Message  -->
+        <TextBlock
+            Grid.Row="8"
+            Grid.Column="0"
+			Classes="Retro"
+            VerticalAlignment="Top"
+            Text="Message:" />
+        <TextBox
+            Grid.Row="8"
+			IsReadOnly="True"
+            Grid.Column="1"
+			Classes="Retro"
+			MaxHeight="600"
+            Margin="5,0,0,0"
+            VerticalAlignment="Top"
+            Text="{Binding Log.Message}"
+            TextWrapping="Wrap" />
+        <!--  Exception  -->
+        <TextBlock
+            Grid.Row="9"
+            Grid.Column="0"
+			Classes="Retro"
+            VerticalAlignment="Top"
+            Text="Exception:" />
+        <TextBlock
+            Grid.Row="9"
+            Grid.Column="1"
+            Margin="5,0,0,0"
+			Classes="Retro"
+            VerticalAlignment="Top"
+            Text="{Binding Log.Exception}"
+            TextWrapping="Wrap" />
+        <!--  Type  -->
+        <TextBlock
+            Grid.Row="10"
+			Classes="Retro"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Text="Type:" />
+        <TextBlock
+            Grid.Row="10"
+            Grid.Column="1"
+            Margin="5,0,0,0"
+			Classes="Retro"
+            VerticalAlignment="Center"
+            Text="{Binding Log.Type}" />
+    </Grid>
 </UserControl>

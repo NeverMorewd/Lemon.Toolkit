@@ -6,10 +6,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
+	Name="playgroundOllama"
     mc:Ignorable="d">
     <Grid RowDefinitions="200,*,auto,auto">
         <DockPanel Grid.Row="0" LastChildFill="True">
             <TextBox
+				Height="150"
+				TextWrapping="Wrap"
                 DockPanel.Dock="Bottom"
                 IsReadOnly="True"
                 Text="{Binding ReplyContent}" />
@@ -26,7 +29,7 @@
         <ListBox Grid.Row="1" ItemsSource="{Binding ApiCollection}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="100,100,*,100">
+                    <Grid ColumnDefinitions="150,100,*,100">
                         <TextBlock
                             Grid.Column="0"
                             VerticalAlignment="Center"
@@ -42,7 +45,8 @@
                         <Button
                             Grid.Column="3"
                             VerticalAlignment="Center"
-                            Command="{Binding MockApiCommand}"
+                            Command="{Binding #playgroundOllama.DataContext.MockCommand}"
+							CommandParameter="{Binding}"
                             Content="Mock" />
                     </Grid>
                 </DataTemplate>

@@ -24,7 +24,7 @@ public class NoiseCanvas : Control
     public static readonly StyledProperty<TimeSpan> RefreshIntervalProperty =
         AvaloniaProperty.Register<NoiseCanvas, TimeSpan>(nameof(RefreshInterval), TimeSpan.FromMilliseconds(500));
 
-    private DispatcherTimer _refreshTimer;
+    private DispatcherTimer? _refreshTimer;
     private readonly Random _random = new();
     private List<Point> _noisePoints = [];
 
@@ -57,7 +57,10 @@ public class NoiseCanvas : Control
         set
         {
             SetValue(RefreshIntervalProperty, value);
-            _refreshTimer.Interval = value;
+            if (_refreshTimer != null)
+            {
+                _refreshTimer.Interval = value;
+            }
         }
     }
 
@@ -71,6 +74,10 @@ public class NoiseCanvas : Control
     }
     private void RegenerateNoise()
     {
+        if(!IsEnabled)
+        {
+            return;
+        }
         if (Width <= 0 || Height <= 0)
             return;
 
