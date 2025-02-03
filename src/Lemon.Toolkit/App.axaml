@@ -135,28 +135,27 @@
             <Setter Property="Height" Value="500" />
             <Setter Property="Width" Value="600" />
             <Setter Property="SystemDecorations" Value="None" />
-            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
+            <Setter Property="Background" Value="Blue" />
             <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="behaviors:HandyWindowBehavior.IsDragEnabled" Value="True" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <Grid>
-                            <Border
-                                Margin="5"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                BoxShadow="0 0 2 2 #BFFF00"
-                                Classes="screen-flicker"
-                                CornerRadius="5">
-                                <Border.Effect>
-                                    <BlurEffect Radius="0.8" />
-                                </Border.Effect>
+						<Border
+	                        Margin="0"
+	                        Background="{TemplateBinding Background}"
+	                        BorderBrush="{TemplateBinding BorderBrush}"
+	                        BorderThickness="{TemplateBinding BorderThickness}"
+	                        Classes="screen-flicker"
+	                        CornerRadius="5">
+							<Border.Effect>
+								<BlurEffect Radius="0.8" />
+							</Border.Effect>
+                        <Grid Margin="5" Background="Transparent">
 
-                                <Grid>
-                                    <controls:NoiseCanvas
+                                <Grid Margin="5" Background="Transparent">
+									<!--<controls:NoiseCanvas
                                         Width="{TemplateBinding Width}"
                                         Height="{TemplateBinding Height}"
                                         Margin="1"
@@ -164,16 +163,16 @@
                                         NoiseColor="White"
                                         NoiseCount="3000"
                                         NoiseSize="2"
-                                        RefreshInterval="0:0:0.1" />
+                                        RefreshInterval="0:0:0.1" />-->
 
-                                    <Grid Margin="1">
+                                    <Grid Margin="10">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="*" />
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <DockPanel Grid.Row="0" Margin="4">
+                                        <DockPanel Grid.Row="0" Margin="0">
                                             <Button
                                                 behaviors:HandyWindowBehavior.IsShutdownButton="True"
                                                 Classes="Retro"
@@ -209,8 +208,7 @@
                                         </DockPanel>
                                     </Grid>
                                 </Grid>
-                            </Border>
-                            <Border
+                            <!--<Border
                                 Height="3"
                                 Margin="5,0,5,0"
                                 VerticalAlignment="Top"
@@ -219,8 +217,9 @@
                                 <Border.Effect>
                                     <BlurEffect Radius="3" />
                                 </Border.Effect>
-                            </Border>
+                            </Border>-->
                         </Grid>
+						</Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
