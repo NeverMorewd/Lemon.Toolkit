@@ -8,6 +8,9 @@ using Lemon.Toolkit.Models.Ollama;
 using System.Drawing;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
+using Avalonia.Controls.Documents;
+using System.Linq;
 
 namespace Lemon.Toolkit.Services.OllamaServices
 {
@@ -36,11 +39,23 @@ namespace Lemon.Toolkit.Services.OllamaServices
             _httpClient = httpClientFactory.CreateClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(3);
         }
+        private string? currentModel;
+        public string? CurrentModel
+        {
+            get
+            {
+                return currentModel;
+            }
+            set
+            {
+                currentModel = value;
+            }
+        }
         public async Task<string> Ask(string content)
         {
             try
             {
-                var prompt = new OllamaGenerateRequest(CurrentModelName, content, stream: false);
+                var prompt = new OllamaGenerateRequest(CurrentModel, content, stream: false);
                 var response = await _ollamaApi.GenerateText(prompt);
                 return response.Response!;
 
@@ -51,11 +66,63 @@ namespace Lemon.Toolkit.Services.OllamaServices
                 return exception.Message;
             }
         }
+        public async Task<string> Chat(string content)
+        {
+            try
+            {
+                var prompt = new ChatRequest
+                {
+                    Stream = false,
+                    Messages = [ new Message 
+                    {
+                        Role = "user",
+                        Content = content
+                    }],
+                    Model = CurrentModel!,
+                };
+                var response = await _ollamaApi.Chat(prompt);
+                return response.Message.Content!;
+
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Ask error");
+                return exception.Message;
+            }
+        }
+        public async Task LoadModel(string modelName)
+        {
+            try
+            {
+                var prompt = new OllamaGenerateRequest(CurrentModel);
+                var response = await _ollamaApi.GenerateText(prompt);
+                if (!response.Done)
+                {
+                    throw new Exception($"Fail to load {modelName}");
+                }
+            }
+            catch(Exception ex)
+            { }
+        }
+        public async Task UnloadModel(string modelName)
+        {
+            try
+            {
+                var prompt = new OllamaGenerateRequest(CurrentModel, keepAlive: 0);
+                var response = await _ollamaApi.GenerateText(prompt);
+                if (!response.Done)
+                {
+                    throw new Exception($"Fail to Unload {modelName}");
+                }
+            }
+            catch(Exception ex)
+            { }
+        }
         public async Task<string> AskOriginal(string content)
         {
             try
             {
-                var prompt = new OllamaGenerateRequest(CurrentModelName, content, stream: false);
+                var prompt = new OllamaGenerateRequest(CurrentModel, content, stream: false);
                 var response = await _httpClient.PostAsJsonAsync("http://localhost:11434/api/generate", prompt);
                 if (response.IsSuccessStatusCode)
                 {
@@ -81,9 +148,17 @@ namespace Lemon.Toolkit.Services.OllamaServices
         {
             return await _ollamaManageService.GetPath();
         }
+        public async Task<IEnumerable<string>> GetAvailableModels()
+        {
+            return (await GetModels()).Where(m=>!IsEmbed(m));
+        }
         public async Task<IEnumerable<string>> GetModels()
         {
             return await _ollamaManageService.GetModels();
+        }
+        public bool IsEmbed(string modelName)
+        {
+            return modelName.Contains("-embed-");
         }
     }
 }

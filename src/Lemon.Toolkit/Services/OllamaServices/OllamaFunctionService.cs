@@ -23,7 +23,7 @@ namespace Lemon.Toolkit.Services.OllamaServices
                     case "/api/generate":
                         return await _ollamaApi.GenerateText(new OllamaGenerateRequest());
                     case "/api/chat":
-                        return await _ollamaApi.Chat(new OllamaGenerateRequest());
+                        return await _ollamaApi.Chat(new ChatRequest());
                     case "/api/version":
                         return await _ollamaApi.GetVersion();
                     case "/api/tags":

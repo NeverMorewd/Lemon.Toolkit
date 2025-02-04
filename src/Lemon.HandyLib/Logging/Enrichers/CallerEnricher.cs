@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using Serilog.Extensions.Logging;
 using System.Diagnostics;
 using System.Linq;
 
@@ -10,28 +11,22 @@ namespace Lemon.HandyLib.Logging.Enrichers
     {
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            var skip = 7;
             var trace = new StackTrace(true);
-            var stacks = trace.GetFrames();
-            if (skip >= stacks.Length)
+            for (int i = 1; i < trace.FrameCount; i++)
             {
-                skip = stacks.Length - 1;
-            }
-            while (true)
-            {
-                var stack = stacks[skip];
-                if (!stack.HasMethod())
-                {
-                    logEvent.AddPropertyIfAbsent(new LogEventProperty("Caller", new ScalarValue("<unknown method>")));
-                    return;
-                }
-
-                var method = stack.GetMethod();
-                if (method!.DeclaringType!.Assembly != typeof(Log).Assembly)
+                var frame = trace.GetFrame(i);
+                var method = frame.GetMethod();
+                if (method.DeclaringType != typeof(Logger) 
+                    && method.DeclaringType != typeof(LoggerConfiguration)
+                    && method.DeclaringType != typeof(SerilLogHelper)
+                     && method!.DeclaringType!.Assembly != typeof(SerilogLoggerFactory).Assembly
+                     && method!.DeclaringType!.Assembly != typeof(Microsoft.Extensions.Logging.ILogger).Assembly
+                     && method!.DeclaringType!.Assembly != typeof(Microsoft.Extensions.Logging.LoggerFactory).Assembly
+                    && method!.DeclaringType!.Assembly != typeof(Log).Assembly)
                 {
                     if (logEvent.Level > LogEventLevel.Debug)
                     {
-                        var caller = $"{method.DeclaringType.FullName}.{method.Name}({string.Join(", ", method.GetParameters().Select(pi => pi.ParameterType.Name))}).{stack.GetFileLineNumber()}";
+                        var caller = $"{method.DeclaringType.FullName}.{method.Name}({string.Join(", ", method.GetParameters().Select(pi => pi.ParameterType.Name))}).{frame.GetFileLineNumber()}";
                         logEvent.AddPropertyIfAbsent(new LogEventProperty("Caller", new ScalarValue(caller)));
                     }
                     else
@@ -39,12 +34,41 @@ namespace Lemon.HandyLib.Logging.Enrichers
                         var caller = $"{method.DeclaringType.FullName}";
                         logEvent.AddPropertyIfAbsent(new LogEventProperty("Caller", new ScalarValue(caller)));
                     }
-
-                    return;
+                    break;
                 }
-
-                skip++;
             }
+            //if (skip >= stacks.Length)
+            //{
+            //    skip = stacks.Length - 1;
+            //}
+            //while (true)
+            //{
+            //    var stack = stacks[skip];
+            //    if (!stack.HasMethod())
+            //    {
+            //        logEvent.AddPropertyIfAbsent(new LogEventProperty("Caller", new ScalarValue("<unknown method>")));
+            //        return;
+            //    }
+
+            //    var method = stack.GetMethod();
+            //    if (method!.DeclaringType!.Assembly != typeof(Log).Assembly)
+            //    {
+            //        if (logEvent.Level > LogEventLevel.Debug)
+            //        {
+            //            var caller = $"{method.DeclaringType.FullName}.{method.Name}({string.Join(", ", method.GetParameters().Select(pi => pi.ParameterType.Name))}).{stack.GetFileLineNumber()}";
+            //            logEvent.AddPropertyIfAbsent(new LogEventProperty("Caller", new ScalarValue(caller)));
+            //        }
+            //        else
+            //        {
+            //            var caller = $"{method.DeclaringType.FullName}";
+            //            logEvent.AddPropertyIfAbsent(new LogEventProperty("Caller", new ScalarValue(caller)));
+            //        }
+
+            //        return;
+            //    }
+
+            //    skip++;
+            //}
         }
     }
 

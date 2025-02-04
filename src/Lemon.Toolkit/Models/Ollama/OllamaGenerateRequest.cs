@@ -7,7 +7,7 @@ public struct OllamaGenerateRequest
 {
     public OllamaGenerateRequest(
         string? model,
-        string? prompt,
+        string? prompt = null,
         List<string>? images = null,
         string? format = null,
         Dictionary<string, object>? options = null,
@@ -16,7 +16,7 @@ public struct OllamaGenerateRequest
         List<int>? context = null,
         bool stream = false,
         bool raw = false,
-        string? keepAlive = null)
+        int? keepAlive = null)
     {
         Model = model;
         Prompt = prompt;
@@ -61,6 +61,6 @@ public struct OllamaGenerateRequest
     public bool Raw { get; private set; }
 
     [JsonPropertyName("keep_alive")]
-    public string? KeepAlive { get; private set; }
+    public int? KeepAlive { get; private set; }
 
 }

@@ -12,7 +12,7 @@ namespace Lemon.Toolkit.Services.OllamaServices
         Task<OllamaGenerateResponse> GenerateText([Body] OllamaGenerateRequest request);
         
         [Post("/api/chat")]
-        Task<OllamaGenerateResponse> Chat([Body] OllamaGenerateRequest request);
+        Task<ChatResponse> Chat([Body] ChatRequest request);
         
         [Get("/api/version")]
         Task<JsonObject> GetVersion();

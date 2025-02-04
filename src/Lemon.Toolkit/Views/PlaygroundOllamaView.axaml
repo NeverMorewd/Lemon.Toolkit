@@ -14,7 +14,7 @@
             <ComboBox
                 Width="200"
                 ItemsSource="{Binding Models}"
-                SelectedItem="{Binding CurrentModel}" />
+                SelectedItem="{Binding CurrentModel,Mode=TwoWay}" />
         </StackPanel>
         <DockPanel Grid.Row="1" LastChildFill="True">
             <TextBox

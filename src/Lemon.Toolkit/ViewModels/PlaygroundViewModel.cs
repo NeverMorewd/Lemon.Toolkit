@@ -1,4 +1,5 @@
-﻿using Lemon.Toolkit.Models;
+﻿using DynamicData.Binding;
+using Lemon.Toolkit.Models;
 using Lemon.Toolkit.Models.Ollama;
 using Lemon.Toolkit.Services;
 using Lemon.Toolkit.Services.OllamaServices;
@@ -54,11 +55,24 @@ namespace Lemon.Toolkit.ViewModels
                     Verb = methodAttribute.Method.Method,
                 };
             }));
+            this.WhenAnyValue(vm => vm.CurrentModel)
+                .Subscribe(async p => 
+                {
+                    if (_serviceFacade.CurrentModel != null)
+                    {
+                        await _serviceFacade.UnloadModel(_serviceFacade.CurrentModel);
+                    }
+                    _serviceFacade.CurrentModel = p;
+                    if (_serviceFacade.CurrentModel != null)
+                    {
+                        await _serviceFacade.LoadModel(_serviceFacade.CurrentModel!);
+                    }
+                });
             Task.Run(async () => 
             {
                 _shellService.OnNext(new ShellParamModel { IsProcessing = true });
                 OllamaPath = await _serviceFacade.GetPath();
-                Models = await _serviceFacade.GetModels();
+                Models = await _serviceFacade.GetAvailableModels();
                 if (Models != null && Models.Any())
                 {
                     CurrentModel = Models.First();
