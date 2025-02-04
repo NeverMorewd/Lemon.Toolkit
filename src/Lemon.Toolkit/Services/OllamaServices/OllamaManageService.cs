@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
@@ -10,17 +13,30 @@ namespace Lemon.Toolkit.Services.OllamaServices;
 public class OllamaManageService
 {
     private readonly ILogger _logger;
-    public OllamaManageService(ILogger<OllamaManageService> logger)
+    private readonly IOllamaApi _ollamaApi;
+    public OllamaManageService(IOllamaApi ollamaApi, ILogger<OllamaManageService> logger)
     {
         _logger = logger;
+        _ollamaApi = ollamaApi;
     }
     
-    private static readonly string[] _possiblePaths =
+
+    public Task<string?> GetPath()
     {
+        return Task.Run(GetInstallPath); 
+    }
+    public async Task<IEnumerable<string>> GetModels()
+    {
+        var models = await _ollamaApi.ListModels();
+        return models.Models.Select(mi=>mi.Name);
+    }
+
+    private static readonly string[] _possiblePaths =
+    [
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Ollama", "ollama.exe"),
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Ollama", "ollama.exe"),
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ollama", "ollama.exe")
-    };
+    ];
     
     public static bool IsOllamaInstalled()
     {
@@ -60,7 +76,7 @@ public class OllamaManageService
             };
 
             process.Start();
-            process.WaitForExit(1000); // 设置超时时间 1 秒
+            process.WaitForExit(1000);
             return process.ExitCode == 0;
         }
         catch (Exception)
@@ -73,13 +89,11 @@ public class OllamaManageService
     {
         try
         {
-            // Windows 检查进程是否存在
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 return Process.GetProcessesByName("ollama").Any();
             }
             
-            // Linux/macOS 需要其他实现（此处留空）
             return false;
         }
         catch (Exception)

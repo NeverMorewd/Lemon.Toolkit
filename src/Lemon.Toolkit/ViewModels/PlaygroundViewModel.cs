@@ -1,10 +1,13 @@
-﻿using Lemon.Toolkit.Models.Ollama;
+﻿using Lemon.Toolkit.Models;
+using Lemon.Toolkit.Models.Ollama;
+using Lemon.Toolkit.Services;
 using Lemon.Toolkit.Services.OllamaServices;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Refit;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -18,10 +21,14 @@ namespace Lemon.Toolkit.ViewModels
     {
         private readonly OllamaServiceFacade _serviceFacade;
         private readonly ILogger _logger;
+        private readonly IObserver<ShellParamModel> _shellService;
 
-        public PlaygroundViewModel(OllamaServiceFacade ollamaServiceFacade, ILogger<PlaygroundViewModel> logger)
+        public PlaygroundViewModel(OllamaServiceFacade ollamaServiceFacade,
+            IObserver<ShellParamModel> shellService,
+            ILogger<PlaygroundViewModel> logger)
         {
             _serviceFacade = ollamaServiceFacade;
+            _shellService = shellService;
             _logger = logger;
             MockCommand = ReactiveCommand.CreateFromTask<OllamaApiMeta>(MockAsync);
             AskCommand = ReactiveCommand.CreateFromTask<string?, string>(AskAsync);
@@ -47,6 +54,17 @@ namespace Lemon.Toolkit.ViewModels
                     Verb = methodAttribute.Method.Method,
                 };
             }));
+            Task.Run(async () => 
+            {
+                _shellService.OnNext(new ShellParamModel { IsProcessing = true });
+                OllamaPath = await _serviceFacade.GetPath();
+                Models = await _serviceFacade.GetModels();
+                if (Models != null && Models.Any())
+                {
+                    CurrentModel = Models.First();
+                }
+                _shellService.OnNext(new ShellParamModel { IsProcessing = false });
+            });
         }
 
         private async Task MockAsync(OllamaApiMeta meta)
@@ -73,7 +91,24 @@ namespace Lemon.Toolkit.ViewModels
             get;
             set;
         }
-
+        [Reactive]
+        public string? OllamaPath
+        {
+            get;
+            set;
+        }
+        [Reactive]
+        public IEnumerable<string>? Models
+        {
+            get;
+            set;
+        }
+        [Reactive]
+        public string? CurrentModel
+        {
+            get;
+            set;
+        }
         public ObservableCollection<OllamaApiMeta> ApiCollection
         {
             get;

@@ -73,6 +73,7 @@ namespace Lemon.Toolkit
             .AddTypedClient(c => RestService.For<IOllamaApi>(c));
 
             //hostBuilder.Services.AddHttpClient();
+            hostBuilder.Services.AddSingleton<OllamaManageService>();
             hostBuilder.Services.AddSingleton<OllamaFunctionService>();
             hostBuilder.Services.AddSingleton<OllamaServiceFacade>();
             hostBuilder.Services.AddSingleton<EnvironmentVariableService>();

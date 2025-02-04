@@ -87,12 +87,12 @@
         </Style>
         <Style Selector="TextBlock.blink">
             <Style.Animations>
-                <Animation IterationCount="INFINITE" Duration="0:0:1">
+                <Animation IterationCount="INFINITE" Duration="0:0:2">
                     <KeyFrame Cue="0%">
                         <Setter Property="Opacity" Value="1.0" />
                     </KeyFrame>
                     <KeyFrame Cue="50%">
-                        <Setter Property="Opacity" Value="0.3" />
+                        <Setter Property="Opacity" Value="0.5" />
                     </KeyFrame>
                     <KeyFrame Cue="100%">
                         <Setter Property="Opacity" Value="1.0" />
@@ -134,28 +134,31 @@
         <Style Selector="Window.Retro">
             <Setter Property="Height" Value="500" />
             <Setter Property="Width" Value="600" />
-            <Setter Property="SystemDecorations" Value="None" />
-            <Setter Property="Background" Value="Blue" />
+            <Setter Property="SystemDecorations" Value="Full" />
+			<Setter Property="ExtendClientAreaChromeHints" Value="Default"/>
+			<Setter Property="ExtendClientAreaToDecorationsHint" Value="True"/>
+		    <Setter Property="ExtendClientAreaTitleBarHeightHint" Value="30"/>
+            <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource RetroBorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="behaviors:HandyWindowBehavior.IsDragEnabled" Value="True" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-						<Border
-	                        Margin="0"
-	                        Background="{TemplateBinding Background}"
-	                        BorderBrush="{TemplateBinding BorderBrush}"
-	                        BorderThickness="{TemplateBinding BorderThickness}"
-	                        Classes="screen-flicker"
-	                        CornerRadius="5">
-							<Border.Effect>
-								<BlurEffect Radius="0.8" />
-							</Border.Effect>
-                        <Grid Margin="5" Background="Transparent">
+                        <Border
+                            Margin="0"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Classes="screen-flicker"
+                            CornerRadius="0">
+                            <Border.Effect>
+                                <BlurEffect Radius="0.8" />
+                            </Border.Effect>
+                            <Grid Margin="10" Background="Transparent">
 
                                 <Grid Margin="5" Background="Transparent">
-									<!--<controls:NoiseCanvas
+                                    <controls:NoiseCanvas
                                         Width="{TemplateBinding Width}"
                                         Height="{TemplateBinding Height}"
                                         Margin="1"
@@ -163,7 +166,7 @@
                                         NoiseColor="White"
                                         NoiseCount="3000"
                                         NoiseSize="2"
-                                        RefreshInterval="0:0:0.1" />-->
+                                        RefreshInterval="0:0:0.1" />
 
                                     <Grid Margin="10">
                                         <Grid.RowDefinitions>
@@ -208,7 +211,7 @@
                                         </DockPanel>
                                     </Grid>
                                 </Grid>
-                            <!--<Border
+                                <!--<Border
                                 Height="3"
                                 Margin="5,0,5,0"
                                 VerticalAlignment="Top"
@@ -218,8 +221,8 @@
                                     <BlurEffect Radius="3" />
                                 </Border.Effect>
                             </Border>-->
-                        </Grid>
-						</Border>
+                            </Grid>
+                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
