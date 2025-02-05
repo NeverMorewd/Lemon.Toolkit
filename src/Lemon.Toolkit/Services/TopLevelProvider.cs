@@ -1,8 +1,8 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Notifications;
+using Avalonia.Threading;
 using Lemon.Toolkit.Domains;
-using Lemon.Toolkit.Shells;
 using System;
 using System.Threading;
 
@@ -87,6 +87,11 @@ namespace Lemon.Toolkit.Services
         }
         private TopLevel? GetTopLevelCore()
         {
+            if(!Dispatcher.UIThread.CheckAccess())
+            {
+                throw new InvalidOperationException($"You can access ui component by UI thread only!");
+            }
+
             if (_topLevel != null)
             {
                 return _topLevel;

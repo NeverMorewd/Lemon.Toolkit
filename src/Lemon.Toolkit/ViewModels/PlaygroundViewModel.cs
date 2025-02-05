@@ -1,4 +1,8 @@
-﻿using DynamicData.Binding;
+﻿using Avalonia;
+using Avalonia.Controls.Notifications;
+using Avalonia.Threading;
+using DynamicData.Binding;
+using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
 using Lemon.Toolkit.Models.Ollama;
 using Lemon.Toolkit.Services;
@@ -15,6 +19,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Notification = Avalonia.Controls.Notifications.Notification;
 
 namespace Lemon.Toolkit.ViewModels
 {
@@ -23,13 +28,15 @@ namespace Lemon.Toolkit.ViewModels
         private readonly OllamaServiceFacade _serviceFacade;
         private readonly ILogger _logger;
         private readonly IObserver<ShellParamModel> _shellService;
-
+        private readonly ITopLevelProvider _topLevelProvider;
         public PlaygroundViewModel(OllamaServiceFacade ollamaServiceFacade,
+            ITopLevelProvider topLevelProvider,
             IObserver<ShellParamModel> shellService,
             ILogger<PlaygroundViewModel> logger)
         {
             _serviceFacade = ollamaServiceFacade;
             _shellService = shellService;
+            _topLevelProvider = topLevelProvider;
             _logger = logger;
             MockCommand = ReactiveCommand.CreateFromTask<OllamaApiMeta>(MockAsync);
             AskCommand = ReactiveCommand.CreateFromTask<string?, string>(AskAsync);
@@ -71,13 +78,28 @@ namespace Lemon.Toolkit.ViewModels
             Task.Run(async () => 
             {
                 _shellService.OnNext(new ShellParamModel { IsProcessing = true });
-                OllamaPath = await _serviceFacade.GetPath();
-                Models = await _serviceFacade.GetAvailableModels();
-                if (Models != null && Models.Any())
+                try
                 {
-                    CurrentModel = Models.First();
+                    OllamaPath = await _serviceFacade.GetPath();
+                    Models = await _serviceFacade.GetAvailableModels();
+                    if (Models != null && Models.Any())
+                    {
+                        CurrentModel = Models.First();
+                    }
                 }
-                _shellService.OnNext(new ShellParamModel { IsProcessing = false });
+                catch (Exception ex)
+                {
+                    //Dispatcher.UIThread.Post(() => 
+                    //{
+                    //    _topLevelProvider.NotificationManager!.Show(new Notification("Error", ex.Message, NotificationType.Error));
+                    //},DispatcherPriority.Send);
+                    _topLevelProvider.NotificationManager!.Show(new Notification("Error", ex.Message, NotificationType.Error));
+
+                }
+                finally
+                {
+                    _shellService.OnNext(new ShellParamModel { IsProcessing = false });
+                }
             });
         }
 

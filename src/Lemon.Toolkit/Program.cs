@@ -20,6 +20,8 @@ using Serilog;
 using System;
 using System.Runtime.Versioning;
 using Refit;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 
 namespace Lemon.Toolkit
 {
@@ -32,6 +34,10 @@ namespace Lemon.Toolkit
             var consoleStreamService = new ConsoleStreamService();
             SerilLogHelper.Config("Lemon.Toolkit");
             SerilLogHelper.Information("====𝕃𝕖𝕞𝕠𝕟====");
+
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
+
             var hostBuilder = Host.CreateApplicationBuilder();
 
             // config IConfiguration
@@ -91,6 +97,13 @@ namespace Lemon.Toolkit
             RunApp(hostBuilder, args);
 
         }
+
+
+        private static void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+        {
+            
+        }
+
         [SupportedOSPlatform("windows")]
         private static void RunApp(HostApplicationBuilder hostBuilder, string[] args)
         {
