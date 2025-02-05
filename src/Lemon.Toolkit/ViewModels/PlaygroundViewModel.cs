@@ -89,11 +89,11 @@ namespace Lemon.Toolkit.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    //Dispatcher.UIThread.Post(() => 
-                    //{
-                    //    _topLevelProvider.NotificationManager!.Show(new Notification("Error", ex.Message, NotificationType.Error));
-                    //},DispatcherPriority.Send);
-                    _topLevelProvider.NotificationManager!.Show(new Notification("Error", ex.Message, NotificationType.Error));
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        _topLevelProvider.NotificationManager!.Show(new Notification("Error", ex.Message, NotificationType.Error));
+                    }, DispatcherPriority.Send);
+                    //_topLevelProvider.NotificationManager!.Show(new Notification("Error", ex.Message, NotificationType.Error));
 
                 }
                 finally
