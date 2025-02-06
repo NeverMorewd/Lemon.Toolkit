@@ -1,10 +1,8 @@
-﻿using DynamicData.Binding;
-using Lemon.ModuleNavigation.Abstracts;
+﻿using Lemon.ModuleNavigation.Abstracts;
 using Lemon.ModuleNavigation.Core;
 using Lemon.Toolkit.Domains;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
