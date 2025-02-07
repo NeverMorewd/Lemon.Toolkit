@@ -145,7 +145,7 @@ namespace Lemon.Toolkit.Services.OllamaServices
 
         public async Task<string?> GetPath()
         {
-            return await _ollamaManageService.GetPath();
+            return await _ollamaManageService.SearchPathAsync();
         }
         public async Task<IEnumerable<string>> GetAvailableModels()
         {

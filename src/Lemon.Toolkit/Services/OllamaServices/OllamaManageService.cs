@@ -1,12 +1,12 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
 
 namespace Lemon.Toolkit.Services.OllamaServices;
 
@@ -14,21 +14,131 @@ public class OllamaManageService
 {
     private readonly ILogger _logger;
     private readonly IOllamaApi _ollamaApi;
+    private Process? _process;
+    private readonly SemaphoreSlim _semaphore;
     public OllamaManageService(IOllamaApi ollamaApi, ILogger<OllamaManageService> logger)
     {
         _logger = logger;
         _ollamaApi = ollamaApi;
+        _semaphore = new SemaphoreSlim(1, 1);
     }
-    
-
-    public Task<string?> GetPath()
+    public string AppName => "ollama app";
+    public string CoreName => "ollama";
+    public string ServerName => "ollama_llama_server";
+    public string AppFileNameWinNT => "ollama app.exe";
+    public Process? Process
     {
-        return Task.Run(GetInstallPath); 
+        get
+        {
+            if (_process == null || _process.HasExited)
+            {
+                _process?.Dispose();
+                _process = LinkProcess(ServerName);
+                if (_process != null)
+                {
+                    _process.EnableRaisingEvents = true;
+                    _process.Exited += Process_Exited;
+                    ReadOutputAsync(_process);
+                }
+            }
+            return _process;
+        }
+    }
+
+    private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+    {
+        //throw new NotImplementedException();
+    }
+
+    private void Process_Exited(object? sender, EventArgs e)
+    {
+        _logger.LogDebug($"{_process!.ProcessName}-{_process.Id}:{_process.ExitCode}");
+    }
+
+    public async Task<(bool Result, string Message)> RunAsync(string? path = null)
+    {
+        if (IsRunning())
+        {
+            return (false, $"{AppName} has been running already!");
+        }
+        else
+        {
+            _process?.Dispose();
+            if (string.IsNullOrEmpty(path))
+            {
+                path = await SearchPathAsync();
+            }
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new InvalidOperationException($"Can not find path of {AppName}");
+            }
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = Path.Combine(path, AppFileNameWinNT),
+                CreateNoWindow = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
+            _process = new()
+            {
+                StartInfo = startInfo,
+                EnableRaisingEvents = true,
+            };
+            _process.Exited += (sender, args) =>
+            {
+                _logger.LogDebug($"{_process.ProcessName}-{_process.Id}:{_process.ExitCode}");
+            };
+            _process.OutputDataReceived += (sender, args) =>
+            {
+                _logger.LogDebug($"{_process.ProcessName}-{_process.Id}:{args.Data}");
+            };
+            _process.ErrorDataReceived += (sender, args) =>
+            {
+                _logger.LogError($"{_process.ProcessName}-{_process.Id}:{args.Data}");
+            };
+            _process.Start();
+            _process.BeginOutputReadLine();
+            _process.BeginErrorReadLine();
+            return (true, $"{AppName} is running:{_process.Id}");
+        }
+    }
+    public async Task<(bool Result, string Message)> RebootAsync(TimeSpan waitExitTime)
+    {
+        using var cts = new CancellationTokenSource();
+        cts.CancelAfter(waitExitTime);
+        await Terminate(cts.Token);
+        return await RunAsync();
+    }
+    public async Task Terminate(CancellationToken? cancellationToken = null)
+    {
+        if (Process != null && !Process.HasExited)
+        {
+            Process.Kill();
+            if (cancellationToken.HasValue)
+            {
+                await Process.WaitForExitAsync(cancellationToken.Value);
+            }
+        }
+    }
+    public bool IsRunning()
+    {
+        return Process != null;
+    }
+
+    private Process? LinkProcess(string processName)
+    {
+        return Process.GetProcesses().FirstOrDefault(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public Task<string?> SearchPathAsync()
+    {
+        return Task.Run(GetInstallPath);
     }
     public async Task<IEnumerable<string>> GetModels()
     {
         var models = await _ollamaApi.ListModels();
-        return models.Models.Select(mi=>mi.Name);
+        return models.Models.Select(mi => mi.Name);
     }
 
     private static readonly string[] _possiblePaths =
@@ -37,15 +147,15 @@ public class OllamaManageService
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Ollama", "ollama.exe"),
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ollama", "ollama.exe")
     ];
-    
+
     public static bool IsOllamaInstalled()
     {
-        return CheckExecutableExists() || 
-               CheckEnvironmentVariable() || 
-               CheckServiceRunning() || 
+        return CheckExecutableExists() ||
+               CheckEnvironmentVariable() ||
+               CheckServiceRunning() ||
                CheckRegistry();
     }
-    
+
     private static bool CheckExecutableExists()
     {
         foreach (var path in _possiblePaths)
@@ -57,7 +167,7 @@ public class OllamaManageService
         }
         return false;
     }
-    
+
     private static bool CheckEnvironmentVariable()
     {
         try
@@ -84,7 +194,7 @@ public class OllamaManageService
             return false;
         }
     }
-    
+
     private static bool CheckServiceRunning()
     {
         try
@@ -93,7 +203,7 @@ public class OllamaManageService
             {
                 return Process.GetProcessesByName("ollama").Any();
             }
-            
+
             return false;
         }
         catch (Exception)
@@ -101,7 +211,7 @@ public class OllamaManageService
             return false;
         }
     }
-    
+
     private static bool CheckRegistry()
     {
         if (Environment.OSVersion.Platform != PlatformID.Win32NT) return false;
@@ -117,7 +227,7 @@ public class OllamaManageService
             return false;
         }
     }
-    
+
     public static string? GetInstallPath()
     {
         foreach (var path in _possiblePaths)
@@ -127,7 +237,7 @@ public class OllamaManageService
                 return Path.GetDirectoryName(path);
             }
         }
-        
+
         try
         {
             var process = new Process
@@ -156,5 +266,17 @@ public class OllamaManageService
         }
 
         return string.Empty;
+    }
+    static async Task ReadOutputAsync(Process process)
+    {
+        using System.IO.StreamReader reader = process.StandardOutput;
+        while (!reader.EndOfStream)
+        {
+            string line = await reader.ReadLineAsync();
+            if (line != null)
+            {
+                Console.WriteLine($"{process.ProcessName} Output: " + line);
+            }
+        }
     }
 }

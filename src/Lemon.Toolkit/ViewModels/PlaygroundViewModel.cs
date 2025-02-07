@@ -1,11 +1,8 @@
-﻿using Avalonia;
-using Avalonia.Controls.Notifications;
+﻿using Avalonia.Controls.Notifications;
 using Avalonia.Threading;
-using DynamicData.Binding;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
 using Lemon.Toolkit.Models.Ollama;
-using Lemon.Toolkit.Services;
 using Lemon.Toolkit.Services.OllamaServices;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
@@ -31,7 +28,9 @@ namespace Lemon.Toolkit.ViewModels
         private readonly ILogger _logger;
         private readonly IObserver<ShellParamModel> _shellService;
         private readonly ITopLevelProvider _topLevelProvider;
+        private readonly OllamaManageService _manageService;
         public PlaygroundViewModel(OllamaServiceFacade ollamaServiceFacade,
+            OllamaManageService ollamaManageService,
             ITopLevelProvider topLevelProvider,
             IObserver<ShellParamModel> shellService,
             ILogger<PlaygroundViewModel> logger)
@@ -39,6 +38,7 @@ namespace Lemon.Toolkit.ViewModels
             _serviceFacade = ollamaServiceFacade;
             _shellService = shellService;
             _topLevelProvider = topLevelProvider;
+            _manageService = ollamaManageService;
             _logger = logger;
             var canExecuteObservable = Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(1))
                                         .Select(_ => !IsOllamaProcessRunning())
@@ -84,7 +84,8 @@ namespace Lemon.Toolkit.ViewModels
                     }
                 });
             OllamaSearchPathCommand = ReactiveCommand.CreateFromTask<Unit, string?>(OllamaSearchPathAsync);
-            OllamaRunCommand = ReactiveCommand.CreateFromTask<string, Process>(OllamaRrunAsync, canExecuteObservable);
+            OllamaTerminateCommand = ReactiveCommand.CreateFromTask(TerminateAsync);
+            OllamaRunCommand = ReactiveCommand.CreateFromTask<string, Process?>(OllamaRrunAsync, canExecuteObservable);
             OllamaRunCommand
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Subscribe(p =>
@@ -98,11 +99,6 @@ namespace Lemon.Toolkit.ViewModels
                     }
                 });
             _ = TryLoadModelsFromOllama();
-        }
-        private bool IsOllamaProcessRunning()
-        {
-            var running = Process.GetProcesses().Any(p => p.ProcessName.Equals("ollama", StringComparison.OrdinalIgnoreCase));
-            return running;
         }
         private async Task MockAsync(OllamaApiMeta meta)
         {
@@ -123,7 +119,7 @@ namespace Lemon.Toolkit.ViewModels
         public ReactiveCommand<string?, string> AskCommand { get; }
         public ReactiveCommand<OllamaApiMeta, Unit> MockCommand { get; }
         public ReactiveCommand<Unit, string?> OllamaSearchPathCommand { get; }
-        public ReactiveCommand<string, Process> OllamaRunCommand { get; }
+        public ReactiveCommand<string, Process?> OllamaRunCommand { get; }
         public ReactiveCommand<Unit, Unit> OllamaTerminateCommand { get; }
         [Reactive]
         public string? ReplyContent
@@ -153,48 +149,25 @@ namespace Lemon.Toolkit.ViewModels
         {
             get;
         }
-
-        private async Task<Process> OllamaRrunAsync(string arg)
+        private async Task TerminateAsync()
         {
-            return await Task.Factory.StartNew(() =>
-            {
-                ProcessStartInfo startInfo = new()
-                {
-                    FileName = Path.Combine(arg, "ollama app.exe"),
-                    CreateNoWindow = true,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                };
-                Process process = new()
-                {
-                    StartInfo = startInfo,
-                    EnableRaisingEvents = true,
-                };
-                process.Exited += (sender, args) =>
-                {
-                    _logger.LogDebug($"{process.ProcessName}-{process.Id}:{process.ExitCode}");
-                };
-                process.OutputDataReceived += (sender, args) => 
-                {
-                    _logger.LogDebug($"{process.ProcessName}-{process.Id}:{args.Data}");
-                };
-                process.ErrorDataReceived += (sender, args) => 
-                {
-                    _logger.LogError($"{process.ProcessName}-{process.Id}:{args.Data}");
-                };
-                process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-                return process;
-            });
+            await _manageService.Terminate();
+        }
+        private async Task<Process?> OllamaRrunAsync(string arg)
+        {
+            await _manageService.RunAsync(arg);
+            return _manageService.Process;
         }
 
-
+        private bool IsOllamaProcessRunning()
+        {
+            //var running = Process.GetProcesses().Any(p => p.ProcessName.Equals("ollama", StringComparison.OrdinalIgnoreCase));
+            //return running;
+            return _manageService.IsRunning();
+        }
         private async Task<string?> OllamaSearchPathAsync(Unit unit)
         {
-            await Task.CompletedTask;
-            return null;
+           return await _manageService.SearchPathAsync();
         }
 
         private async Task TryLoadModelsFromOllama()
