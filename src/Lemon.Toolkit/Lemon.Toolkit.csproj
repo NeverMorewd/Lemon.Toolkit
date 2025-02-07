@@ -44,6 +44,8 @@
     <PackageReference Include="Lemon.Hosting.AvaloniauiDesktop" Version="1.0.0" />
     <PackageReference Include="Lemon.ModuleNavigation.Avaloniaui" Version="2.0.7-beta" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.AI" Version="9.1.0-preview.1.25064.3" />
+    <PackageReference Include="Microsoft.Extensions.AI.Ollama" Version="9.1.0-preview.1.25064.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
@@ -52,7 +54,7 @@
     <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
     <PackageReference Include="Refit" Version="8.0.0" />
     <PackageReference Include="Semi.Avalonia" Version="11.2.1.1" />
-    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.1" />
     <PackageReference Include="TaskScheduler" Version="2.11.0" />
   </ItemGroup>
 

@@ -17,6 +17,7 @@ using System.Xml.Linq;
 using Lemon.Toolkit.Extensions;
 using Lemon.Toolkit.Domains;
 using ReactiveUI.Fody.Helpers;
+using System.Diagnostics;
 
 namespace Lemon.Toolkit.ViewModels;
 
@@ -40,7 +41,7 @@ public class TestViewModel : NavigationViewModelBase
         _environmentVariableService = environmentVariableService;
         _logger = logger;
 
-        BrowseCommand = ReactiveCommand.CreateFromTask<Unit, string?>(BrowseFileAync);
+        BrowseCommand = ReactiveCommand.CreateFromTask<Unit, string?>(BrowseFileAsync);
         BrowseCommand.Subscribe(f => 
         {
             SourceFilePath = f;
@@ -56,9 +57,61 @@ public class TestViewModel : NavigationViewModelBase
                 }
             });
         });
+        BrowseExeCommand = ReactiveCommand.CreateFromTask<Unit, string?>(BrowseExeFileAsync);
+        BrowseExeCommand.Subscribe(f =>
+        {
+            ExeSourceFilePath = f;
+        });
+        RunCommand = ReactiveCommand.CreateFromTask<string?>(f =>
+        {
+            return Task.Run(() =>
+            {
+                var processStart = new ProcessStartInfo
+                {
+                    FileName = f,
+                    RedirectStandardOutput = true,
+                };
+                Process process = new()
+                {
+                    StartInfo = processStart
+                };
+                process.EnableRaisingEvents = true;
+                process.Exited += (s,e)=> 
+                {
+                    if (process.HasExited)
+                    {
+                        Console.WriteLine($"{process.Id}:{process.ExitCode}");
+                    }
+                };
+                process.OutputDataReceived += Process_OutputDataReceived;
+                process.Start();
+                process.BeginOutputReadLine();
+            });
+        });
     }
 
-    private async Task<string?> BrowseFileAync(Unit unit)
+
+    private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+    {
+        Console.WriteLine($"Process_OutputDataReceived:{e.Data}");
+    }
+
+    private async Task<string?> BrowseExeFileAsync(Unit unit)
+    {
+        FilePickerOpenOptions options = new()
+        {
+            AllowMultiple = false,
+            FileTypeFilter = [AvaloniauiExtension.FileTypeExe]
+        };
+        var files = await _topLevelProvider.Ensure().StorageProvider.OpenFilePickerAsync(options);
+        if (files != null && files.Any())
+        {
+            return files[0].TryGetLocalPath();
+        }
+        return null;
+    }
+
+    private async Task<string?> BrowseFileAsync(Unit unit)
     {
         FilePickerOpenOptions options = new()
         {
@@ -88,6 +141,7 @@ public class TestViewModel : NavigationViewModelBase
         {
             try
             {
+                var u = _windowsFeatureService.UserName;
                 var can = _windowsFeatureService.CanRegisterTask();
                 _logger.LogDebug($"CanRegisterTask:{can}");
                 if (can)
@@ -124,10 +178,20 @@ public class TestViewModel : NavigationViewModelBase
         set;
     }
 
+    [Reactive]
+    public string? ExeSourceFilePath
+    {
+        get;
+        set;
+    }
+
     public ReactiveCommand<Unit, Unit> TestCommand { get; }
     public ReactiveCommand<string?, Unit> AddPathCommand { get; }
     public ReactiveCommand<Unit, string?> BrowseCommand { get; }
     public ReactiveCommand<string?, Unit> ParseCommand { get; }
+
+    public ReactiveCommand<Unit, string?> BrowseExeCommand { get; }
+    public ReactiveCommand<string?, Unit> RunCommand { get; }
 
     public List<SourceWordModel> ParseXml(string filePath)
     {

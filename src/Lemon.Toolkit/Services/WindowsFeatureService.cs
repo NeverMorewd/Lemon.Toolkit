@@ -23,7 +23,19 @@ namespace Lemon.Toolkit.Services
             _windowsIdentity = WindowsIdentity.GetCurrent();
             _principal = new(_windowsIdentity);
         }
-
+        private string? userName;
+        public string UserName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(userName))
+                {
+                    var u = _windowsIdentity.Name;
+                    userName = Environment.UserName;
+                }
+                return userName;
+            }
+        }
         public bool IsRunAsAdmin
         {
             get
@@ -104,7 +116,7 @@ namespace Lemon.Toolkit.Services
             taskDefinition.Settings.StopIfGoingOnBatteries = false;
             LogonTrigger logonTrigger = new()
             {
-                UserId = WindowsIdentity.GetCurrent().User!.Value,
+                UserId = _windowsIdentity.User!.Value,
                 Delay = TimeSpan.FromSeconds(aDelay)
             };
             taskDefinition.Triggers.Add(logonTrigger);

@@ -34,5 +34,12 @@ namespace Lemon.Toolkit.Extensions
             AppleUniformTypeIdentifiers = ["public.xml"],
             MimeTypes = ["application/xml"]
         };
+
+        public static FilePickerFileType FileTypeExe { get; } = new FilePickerFileType("exe")
+        {
+            Patterns = ["*.exe"],
+            AppleUniformTypeIdentifiers = ["public.exe"],
+            MimeTypes = ["application/exe"]
+        };
     }
 }

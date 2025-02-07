@@ -12,16 +12,16 @@ using Lemon.Toolkit.Services.OllamaServices;
 using Lemon.Toolkit.Shells;
 using Lemon.Toolkit.ViewModels;
 using Lemon.Toolkit.Views;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Refit;
 using Serilog;
 using System;
 using System.Runtime.Versioning;
-using Refit;
 using System.Threading.Tasks;
-using Avalonia.Threading;
 
 namespace Lemon.Toolkit
 {
@@ -71,14 +71,25 @@ namespace Lemon.Toolkit
             hostBuilder.Services.AddView<ChromePreferenceInspector, ChromePreferenceViewModel>(nameof(ChromePreferenceInspector));
             hostBuilder.Services.AddView<PlaygroundOllamaView, PlaygroundViewModel>(nameof(PlaygroundOllamaView));
             hostBuilder.Services.AddView<OllamaManageView, OllamaManageViewModel>(nameof(OllamaManageView));
-            // services
+
+            // httpclient
             hostBuilder.Services.AddHttpClient("ollama", c =>
             {
                 c.BaseAddress = new Uri("http://localhost:11434");
             })
             .AddTypedClient(c => RestService.For<IOllamaApi>(c));
+            hostBuilder.Services.AddDistributedMemoryCache();
+            hostBuilder.Services
+                .AddKeyedChatClient("OllamaChatClient", new OllamaChatClient(new Uri("http://localhost:11434/"), "llama3.1"))
+                .UseDistributedCache()
+                .UseLogging();
 
-            //hostBuilder.Services.AddHttpClient();
+            hostBuilder.Services
+                .AddKeyedChatClient("OllamaChatClient", new OllamaChatClient(new Uri("http://localhost:11434/"), "qwen2"))
+                .UseDistributedCache()
+                .UseLogging();
+            hostBuilder.Services.AddSingleton(sp => sp.GetKeyedServices<IChatClient>("OllamaChatClient"));
+            // services
             hostBuilder.Services.AddSingleton<OllamaManageService>();
             hostBuilder.Services.AddSingleton<OllamaFunctionService>();
             hostBuilder.Services.AddSingleton<OllamaServiceFacade>();
