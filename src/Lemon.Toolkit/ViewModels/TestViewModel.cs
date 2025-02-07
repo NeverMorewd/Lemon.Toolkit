@@ -200,18 +200,21 @@ public class TestViewModel : NavigationViewModelBase
 
         foreach (var element in doc.Descendants("CustomizeListItem"))
         {
-            var item = new SourceWordModel
+            if (element != null)
             {
-                Word = element.Attribute("word")?.Value,
-                ItemType = int.Parse(element.Attribute("itemType")?.Value ?? "-9999"),
-                AddTime = DateTime.ParseExact(
-                    element.Attribute("addTimeP")?.Value,
-                    "yyyyMMddTHHmmss",
-                    CultureInfo.InvariantCulture).ToUniversalTime(),
-                Rating = int.Parse(element.Attribute("rating")?.Value ?? "0"),
-                CategoryTag = element.Attribute("categoryTag")?.Value
-            };
-            items.Add(item);
+                var item = new SourceWordModel
+                {
+                    Word = element.Attribute("word")!.Value,
+                    ItemType = int.Parse(element.Attribute("itemType")?.Value ?? "-9999"),
+                    AddTime = DateTime.ParseExact(
+                        element.Attribute("addTimeP")!.Value,
+                        "yyyyMMddTHHmmss",
+                        CultureInfo.InvariantCulture).ToUniversalTime(),
+                    Rating = int.Parse(element.Attribute("rating")!.Value ?? "0"),
+                    CategoryTag = element.Attribute("categoryTag")!.Value
+                };
+                items.Add(item);
+            }
         }
 
         return items;
@@ -223,4 +226,51 @@ public class TestViewModel : NavigationViewModelBase
         context.SourceVocabulary.AddRange(items);
         context.SaveChanges();
     }
+    private async Task<string?> BrowseFileAync(Unit unit)
+    {
+        FilePickerOpenOptions options = new()
+        {
+            AllowMultiple = false,
+            FileTypeFilter = [AvaloniauiExtension.FileTypeXml]
+        };
+        var files = await _topLevelProvider.Ensure().StorageProvider.OpenFilePickerAsync(options);
+        if (files != null && files.Any())
+        {
+            return files[0].TryGetLocalPath();
+        }
+        return null;
+    }
+
+    //private async Task AddToPathAsync(string? arg)
+    //{
+    //    await Task.Yield();
+    //    if (!string.IsNullOrEmpty(arg))
+    //    {
+    //        _environmentVariableService.WritePath(arg);
+    //    }
+    //}
+
+    //private async Task TestCommandAsync()
+    //{
+    //    await Task.Run(() =>
+    //    {
+    //        try
+    //        {
+    //            var can = _windowsFeatureService.CanRegisterTask();
+    //            _logger.LogDebug($"CanRegisterTask:{can}");
+    //            if (can)
+    //            {
+    //                _windowsFeatureService.CreateTask($"Lemon.Test", Environment.ProcessPath!, "Lemon", 1);
+    //            }
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            _logger.LogError(ex, "TestCommandAsync");
+    //            if (ex.InnerException is not null)
+    //            {
+    //                _logger.LogError(ex.InnerException, "TestCommandAsync");
+    //            }
+    //        }
+    //    });
+    //}
 }

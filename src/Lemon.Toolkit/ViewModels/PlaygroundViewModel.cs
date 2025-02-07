@@ -14,6 +14,8 @@ using Refit;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -38,12 +40,18 @@ namespace Lemon.Toolkit.ViewModels
             _shellService = shellService;
             _topLevelProvider = topLevelProvider;
             _logger = logger;
+            var canExecuteObservable = Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(1))
+                                        .Select(_ => !IsOllamaProcessRunning())
+                                        .DistinctUntilChanged()
+                                        .ObserveOn(RxApp.MainThreadScheduler);
             MockCommand = ReactiveCommand.CreateFromTask<OllamaApiMeta>(MockAsync);
             AskCommand = ReactiveCommand.CreateFromTask<string?, string>(AskAsync);
-            AskCommand.ObserveOn(RxApp.MainThreadScheduler).Subscribe(reply =>
-            {
-                ReplyContent = reply;
-            });
+            AskCommand
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(reply =>
+                {
+                    ReplyContent = reply;
+                });
             Type apiType = typeof(IOllamaApi);
             var methodInfos = apiType.GetMethods();
             ApiCollection = new ObservableCollection<OllamaApiMeta>(methodInfos.Select(m => 
@@ -75,34 +83,27 @@ namespace Lemon.Toolkit.ViewModels
                         await _serviceFacade.LoadModel(_serviceFacade.CurrentModel!);
                     }
                 });
-            Task.Run(async () => 
-            {
-                _shellService.OnNext(new ShellParamModel { IsProcessing = true });
-                try
+            OllamaSearchPathCommand = ReactiveCommand.CreateFromTask<Unit, string?>(OllamaSearchPathAsync);
+            OllamaRunCommand = ReactiveCommand.CreateFromTask<string, Process>(OllamaRrunAsync, canExecuteObservable);
+            OllamaRunCommand
+                .ObserveOn(RxApp.TaskpoolScheduler)
+                .Subscribe(p =>
                 {
-                    OllamaPath = await _serviceFacade.GetPath();
-                    Models = await _serviceFacade.GetAvailableModels();
-                    if (Models != null && Models.Any())
+                    if (p != null && !p.HasExited)
                     {
-                        CurrentModel = Models.First();
+                        if (Models == null || !Models.Any())
+                        {
+                            _ = TryLoadModelsFromOllama();
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        _topLevelProvider.NotificationManager!.Show(new Notification("Error", ex.Message, NotificationType.Error));
-                    }, DispatcherPriority.Send);
-                    //_topLevelProvider.NotificationManager!.Show(new Notification("Error", ex.Message, NotificationType.Error));
-
-                }
-                finally
-                {
-                    _shellService.OnNext(new ShellParamModel { IsProcessing = false });
-                }
-            });
+                });
+            _ = TryLoadModelsFromOllama();
         }
-
+        private bool IsOllamaProcessRunning()
+        {
+            var running = Process.GetProcesses().Any(p => p.ProcessName.Equals("ollama", StringComparison.OrdinalIgnoreCase));
+            return running;
+        }
         private async Task MockAsync(OllamaApiMeta meta)
         {
             var ret = await _serviceFacade.Mock(meta.Path);
@@ -121,6 +122,9 @@ namespace Lemon.Toolkit.ViewModels
 
         public ReactiveCommand<string?, string> AskCommand { get; }
         public ReactiveCommand<OllamaApiMeta, Unit> MockCommand { get; }
+        public ReactiveCommand<Unit, string?> OllamaSearchPathCommand { get; }
+        public ReactiveCommand<string, Process> OllamaRunCommand { get; }
+        public ReactiveCommand<Unit, Unit> OllamaTerminateCommand { get; }
         [Reactive]
         public string? ReplyContent
         {
@@ -148,6 +152,76 @@ namespace Lemon.Toolkit.ViewModels
         public ObservableCollection<OllamaApiMeta> ApiCollection
         {
             get;
+        }
+
+        private async Task<Process> OllamaRrunAsync(string arg)
+        {
+            return await Task.Factory.StartNew(() =>
+            {
+                ProcessStartInfo startInfo = new()
+                {
+                    FileName = Path.Combine(arg, "ollama app.exe"),
+                    CreateNoWindow = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                };
+                Process process = new()
+                {
+                    StartInfo = startInfo,
+                    EnableRaisingEvents = true,
+                };
+                process.Exited += (sender, args) =>
+                {
+                    _logger.LogDebug($"{process.ProcessName}-{process.Id}:{process.ExitCode}");
+                };
+                process.OutputDataReceived += (sender, args) => 
+                {
+                    _logger.LogDebug($"{process.ProcessName}-{process.Id}:{args.Data}");
+                };
+                process.ErrorDataReceived += (sender, args) => 
+                {
+                    _logger.LogError($"{process.ProcessName}-{process.Id}:{args.Data}");
+                };
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                return process;
+            });
+        }
+
+
+        private async Task<string?> OllamaSearchPathAsync(Unit unit)
+        {
+            await Task.CompletedTask;
+            return null;
+        }
+
+        private async Task TryLoadModelsFromOllama()
+        {
+            _shellService.OnNext(new ShellParamModel { IsProcessing = true });
+            try
+            {
+                OllamaPath = await _serviceFacade.GetPath();
+                Models = await _serviceFacade.GetAvailableModels();
+                if (Models != null && Models.Any())
+                {
+                    CurrentModel = Models.First();
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    _topLevelProvider.NotificationManager!.Show(new Notification("Error", ex.Message, NotificationType.Error));
+                }, DispatcherPriority.Send);
+                //_topLevelProvider.NotificationManager!.Show(new Notification("Error", ex.Message, NotificationType.Error));
+
+            }
+            finally
+            {
+                _shellService.OnNext(new ShellParamModel { IsProcessing = false });
+            }
         }
     }
 }

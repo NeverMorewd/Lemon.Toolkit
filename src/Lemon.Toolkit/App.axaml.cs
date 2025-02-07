@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Lemon.Toolkit
@@ -8,10 +10,12 @@ namespace Lemon.Toolkit
     public partial class App : Application
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger _logger;
 
         public App(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            _logger = _serviceProvider.GetRequiredService<ILogger<App>>();
         }
 
         public override void Initialize()
@@ -26,7 +30,7 @@ namespace Lemon.Toolkit
 
         private void UIThread_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-           //
+            _logger.LogError(e.Exception.ToString());
         }
     }
 }

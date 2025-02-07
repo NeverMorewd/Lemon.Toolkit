@@ -10,11 +10,19 @@
     mc:Ignorable="d">
     <Grid RowDefinitions="auto,200,*,auto,auto">
         <StackPanel Orientation="Vertical" Spacing="2">
-            <TextBlock Text="{Binding OllamaPath}" />
+            <TextBox IsReadOnly="True" Text="{Binding OllamaPath}" />
+            <StackPanel Orientation="Horizontal">
+                <Button Command="{Binding OllamaPathSearchCommand}" Content="Search" />
+                <Button
+                    Command="{Binding OllamaRunCommand}"
+                    CommandParameter="{Binding OllamaPath}"
+                    Content="Run" />
+                <Button Command="{Binding OllamaTerminateCommand}" Content="Terminate" />
+            </StackPanel>
             <ComboBox
                 Width="200"
                 ItemsSource="{Binding Models}"
-                SelectedItem="{Binding CurrentModel,Mode=TwoWay}" />
+                SelectedItem="{Binding CurrentModel, Mode=TwoWay}" />
         </StackPanel>
         <DockPanel Grid.Row="1" LastChildFill="True">
             <TextBox
