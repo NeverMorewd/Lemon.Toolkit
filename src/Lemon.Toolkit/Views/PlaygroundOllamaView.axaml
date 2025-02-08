@@ -17,7 +17,15 @@
                     Command="{Binding OllamaRunCommand}"
                     CommandParameter="{Binding OllamaPath}"
                     Content="Run" />
+                <CheckBox
+                    VerticalAlignment="Center"
+                    Content="EnableDebuglog"
+                    IsChecked="{Binding EnableDebuglog}" />
                 <Button Command="{Binding OllamaTerminateCommand}" Content="Terminate" />
+                <ToggleSwitch
+                    VerticalAlignment="Center"
+                    Content="TailLog"
+                    IsChecked="{Binding IsTailing}" />
             </StackPanel>
             <ComboBox
                 Width="200"

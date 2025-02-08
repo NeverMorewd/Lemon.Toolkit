@@ -29,6 +29,7 @@ namespace Lemon.Toolkit.ViewModels
         private readonly IObserver<ShellParamModel> _shellService;
         private readonly ITopLevelProvider _topLevelProvider;
         private readonly OllamaManageService _manageService;
+        private IObservable<string>? _logTailing;
         public PlaygroundViewModel(OllamaServiceFacade ollamaServiceFacade,
             OllamaManageService ollamaManageService,
             ITopLevelProvider topLevelProvider,
@@ -46,6 +47,7 @@ namespace Lemon.Toolkit.ViewModels
                                         .ObserveOn(RxApp.MainThreadScheduler);
             MockCommand = ReactiveCommand.CreateFromTask<OllamaApiMeta>(MockAsync);
             AskCommand = ReactiveCommand.CreateFromTask<string?, string>(AskAsync);
+            OllamaTailLogCommand = ReactiveCommand.Create<Unit, IObservable<string>>(OllamaTailLog);
             AskCommand
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(reply =>
@@ -83,6 +85,25 @@ namespace Lemon.Toolkit.ViewModels
                         await _serviceFacade.LoadModel(_serviceFacade.CurrentModel!);
                     }
                 });
+            this.WhenAnyValue(vm => vm.IsTailing)
+               .Subscribe(next =>
+               {
+                   if (next)
+                   {
+                       if (_logTailing == null)
+                       {
+                           _logTailing = _manageService.TailLog();
+                           _logTailing.Subscribe(log =>
+                           {
+                               _logger.LogDebug(log);
+                           });
+                       }
+                   }
+                   else
+                   {
+
+                   }
+               });
             OllamaSearchPathCommand = ReactiveCommand.CreateFromTask<Unit, string?>(OllamaSearchPathAsync);
             OllamaTerminateCommand = ReactiveCommand.CreateFromTask(TerminateAsync);
             OllamaRunCommand = ReactiveCommand.CreateFromTask<string, Process?>(OllamaRrunAsync, canExecuteObservable);
@@ -98,8 +119,21 @@ namespace Lemon.Toolkit.ViewModels
                         }
                     }
                 });
+            OllamaTailLogCommand.Subscribe(logStream => 
+            {
+                logStream.Subscribe(log => 
+                {
+                    _logger.LogDebug(log);
+                });
+            });
             _ = TryLoadModelsFromOllama();
         }
+
+        private IObservable<string> OllamaTailLog(Unit unit)
+        {
+            return _manageService.TailLog();
+        }
+
         private async Task MockAsync(OllamaApiMeta meta)
         {
             var ret = await _serviceFacade.Mock(meta.Path);
@@ -121,6 +155,7 @@ namespace Lemon.Toolkit.ViewModels
         public ReactiveCommand<Unit, string?> OllamaSearchPathCommand { get; }
         public ReactiveCommand<string, Process?> OllamaRunCommand { get; }
         public ReactiveCommand<Unit, Unit> OllamaTerminateCommand { get; }
+        public ReactiveCommand<Unit, IObservable<string>> OllamaTailLogCommand { get; }
         [Reactive]
         public string? ReplyContent
         {
@@ -145,6 +180,18 @@ namespace Lemon.Toolkit.ViewModels
             get;
             set;
         }
+        [Reactive]
+        public bool EnableDebugLog
+        {
+            get;
+            set;
+        }
+        [Reactive]
+        public bool IsTailing
+        {
+            get;
+            set;
+        }
         public ObservableCollection<OllamaApiMeta> ApiCollection
         {
             get;
@@ -155,6 +202,10 @@ namespace Lemon.Toolkit.ViewModels
         }
         private async Task<Process?> OllamaRrunAsync(string arg)
         {
+            if (EnableDebugLog)
+            {
+                _manageService.EnableDebugLog = true;
+            }
             await _manageService.RunAsync(arg);
             return _manageService.Process;
         }

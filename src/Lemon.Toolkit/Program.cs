@@ -7,6 +7,7 @@ using Lemon.ModuleNavigation;
 using Lemon.ModuleNavigation.Avaloniaui.Extensions;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
+using Lemon.Toolkit.Models.Ollama.Platforms;
 using Lemon.Toolkit.Services;
 using Lemon.Toolkit.Services.OllamaServices;
 using Lemon.Toolkit.Shells;
@@ -90,6 +91,7 @@ namespace Lemon.Toolkit
                 .UseLogging();
             hostBuilder.Services.AddSingleton(sp => sp.GetKeyedServices<IChatClient>("OllamaChatClient"));
             // services
+            hostBuilder.Services.AddSingleton<IMetaDataProvider, MetaDataWindows>();
             hostBuilder.Services.AddSingleton<OllamaManageService>();
             hostBuilder.Services.AddSingleton<OllamaFunctionService>();
             hostBuilder.Services.AddSingleton<OllamaServiceFacade>();

@@ -1,3 +1,5 @@
+using Lemon.HandyLib.Toolkits;
+using Lemon.Toolkit.Models.Ollama.Platforms;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using System;
@@ -16,16 +18,16 @@ public class OllamaManageService
     private readonly IOllamaApi _ollamaApi;
     private Process? _process;
     private readonly SemaphoreSlim _semaphore;
-    public OllamaManageService(IOllamaApi ollamaApi, ILogger<OllamaManageService> logger)
+    private readonly IMetaDataProvider _metaDataProvider;
+    public OllamaManageService(IOllamaApi ollamaApi,
+        IMetaDataProvider metaDataProvider,
+        ILogger<OllamaManageService> logger)
     {
         _logger = logger;
         _ollamaApi = ollamaApi;
         _semaphore = new SemaphoreSlim(1, 1);
+        _metaDataProvider = metaDataProvider;
     }
-    public string AppName => "ollama app";
-    public string CoreName => "ollama";
-    public string ServerName => "ollama_llama_server";
-    public string AppFileNameWinNT => "ollama app.exe";
     public Process? Process
     {
         get
@@ -33,7 +35,7 @@ public class OllamaManageService
             if (_process == null || _process.HasExited)
             {
                 _process?.Dispose();
-                _process = LinkProcess(ServerName);
+                _process = LinkProcess(_metaDataProvider.ProcessName_Server);
                 if (_process != null)
                 {
                     _process.EnableRaisingEvents = true;
@@ -43,6 +45,12 @@ public class OllamaManageService
             }
             return _process;
         }
+    }
+
+    public bool EnableDebugLog
+    {
+        get;
+        set;
     }
 
     private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
@@ -59,7 +67,7 @@ public class OllamaManageService
     {
         if (IsRunning())
         {
-            return (false, $"{AppName} has been running already!");
+            return (false, $"{_metaDataProvider.ProcessName_App} has been running already!");
         }
         else
         {
@@ -70,16 +78,22 @@ public class OllamaManageService
             }
             if (string.IsNullOrEmpty(path))
             {
-                throw new InvalidOperationException($"Can not find path of {AppName}");
+                throw new InvalidOperationException($"Can not find path of {_metaDataProvider.AppFileName}");
             }
             ProcessStartInfo startInfo = new()
             {
-                FileName = Path.Combine(path, AppFileNameWinNT),
+                FileName = Path.Combine(path, _metaDataProvider.AppFileName),
                 CreateNoWindow = true,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
             };
+            if(EnableDebugLog)
+            {
+                ///https://priyashpatil.com/posts/how-to-access-and-read-ollama-server-logs-on-various-systems#accessing-ollama-logs-on-windows
+                startInfo.EnvironmentVariables.Add("OLLAMA_DEBUG", "1");
+                _metaDataProvider.EnvironmentVariables = startInfo.EnvironmentVariables;
+            }
             _process = new()
             {
                 StartInfo = startInfo,
@@ -100,7 +114,7 @@ public class OllamaManageService
             _process.Start();
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
-            return (true, $"{AppName} is running:{_process.Id}");
+            return (true, $"{_metaDataProvider.AppFileName} is running:{_process.Id}");
         }
     }
     public async Task<(bool Result, string Message)> RebootAsync(TimeSpan waitExitTime)
@@ -125,7 +139,10 @@ public class OllamaManageService
     {
         return Process != null;
     }
-
+    public IObservable<string> TailLog()
+    {
+        return FileWatcher.TailLogFileRx(_metaDataProvider.ServerLogFilePath);
+    }
     private Process? LinkProcess(string processName)
     {
         return Process.GetProcesses().FirstOrDefault(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
