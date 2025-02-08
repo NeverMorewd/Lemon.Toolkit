@@ -114,7 +114,7 @@ namespace Lemon.Toolkit.Shells
                 cacheCountCleanup,
                 valueChangedCleanup);
 
-            Task.Run(() => 
+            Task.Run(() =>
             {
                 using (_logger.BeginScope("system info"))
                 {
@@ -214,9 +214,9 @@ namespace Lemon.Toolkit.Shells
                 }
 
                 _outputsCache.AddOrUpdate(LogEntry.ParseLog(commandLine,
-                    timeStamp,
-                    Environment.CurrentManagedThreadId, 
-                    LogEntryType.ConsoleIn));
+                    timeStamp: timeStamp,
+                    threadId: Environment.CurrentManagedThreadId,
+                    logEntryType: LogEntryType.ConsoleIn));
 
                 Console.WriteLine($"handle:{commandLine}");
             });

@@ -16,12 +16,16 @@
     <AvaloniaResource Include="Assets\**" />
     <AvaloniaXaml Remove="Framework\**" />
     <AvaloniaXaml Remove="Logging\**" />
+    <AvaloniaXaml Remove="Resources\**" />
     <Compile Remove="Framework\**" />
     <Compile Remove="Logging\**" />
+    <Compile Remove="Resources\**" />
     <EmbeddedResource Remove="Framework\**" />
     <EmbeddedResource Remove="Logging\**" />
+    <EmbeddedResource Remove="Resources\**" />
     <None Remove="Framework\**" />
     <None Remove="Logging\**" />
+    <None Remove="Resources\**" />
     <None Remove="Assets\lemon-100.png" />
     <None Remove="Assets\lemon-50.png" />
     <None Remove="lemon.png" />
@@ -79,8 +83,5 @@
     <None Update="source.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls.Notifications;
 using Avalonia.Platform.Storage;
+using Lemon.HandyLib.Toolkits;
 using Lemon.Toolkit.Domains;
 using Lemon.Toolkit.Models;
 using Lemon.Toolkit.Services;
@@ -15,6 +16,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Notification = Avalonia.Controls.Notifications.Notification;
 
 namespace Lemon.Toolkit.ViewModels
@@ -72,6 +74,7 @@ namespace Lemon.Toolkit.ViewModels
                 }
                 return null;
             });
+            StartWatchingCommand = ReactiveCommand.Create<string?, IObservable<string>>(StartWatchingAsync);
             BrowseFileCommand
                 .Do(f => FilePath = f)
                 //.ObserveOn(RxApp.TaskpoolScheduler)
@@ -89,6 +92,25 @@ namespace Lemon.Toolkit.ViewModels
                     FileSize = $"{hashes.Item3} MB";
                     _shellService.OnNext(new ShellParamModel { IsProcessing = false });
                 });
+            StartWatchingCommand.Subscribe(ob => ob.Subscribe(next => 
+            {
+                Console.WriteLine(next);
+            }));
+        }
+
+        private IObservable<string> StartWatchingAsync(string? arg)
+        {
+            if (string.IsNullOrEmpty(arg))
+            {
+                throw new ArgumentNullException(nameof(arg));
+            }
+            var ob = FileWatcher.TailLogFileRx(arg);
+            //ob.Subscribe(n => 
+            //{
+            //    Console.WriteLine($"{n}");
+            //});
+            //FileWatcher.TailLogFileAsync(arg);
+            return ob;
         }
 
         [Reactive]
@@ -122,6 +144,11 @@ namespace Lemon.Toolkit.ViewModels
             get;
         }
         public ReactiveCommand<object, Unit> CopyCommand
+        {
+            get;
+        }
+
+        public ReactiveCommand<string?, IObservable<string>> StartWatchingCommand
         {
             get;
         }

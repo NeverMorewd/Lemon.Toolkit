@@ -13,7 +13,7 @@ namespace Lemon.Toolkit.Services
         public string ComputeHash(string filePath, HashAlgorithm hashAlgorithm)
         {
             using (hashAlgorithm)
-            using (var stream = File.OpenRead(filePath))
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 byte[] hashBytes = hashAlgorithm.ComputeHash(stream);
                 return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();

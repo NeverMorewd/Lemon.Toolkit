@@ -65,7 +65,11 @@ namespace Lemon.HandyLib.Logging.Definitions
         }
 
         
-        public static LogEntry ParseLog(string logLine, DateTime? timeStamp = null,  int? threadId = null,  LogEntryType logEntryType = LogEntryType.Log)
+        public static LogEntry ParseLog(string logLine,
+            char splitChar = '|',
+            DateTime? timeStamp = null,  
+            int? threadId = null,  
+            LogEntryType logEntryType = LogEntryType.Log)
         {
             try
             {
@@ -101,7 +105,22 @@ namespace Lemon.HandyLib.Logging.Definitions
                         type: LogEntryType.ConsoleIn
                     );
                 }
-                var parts = logLine.Split('|');
+                if (logEntryType == LogEntryType.Log)
+                {
+                    return new LogEntry(
+                                id: Guid.NewGuid(),
+                                timestamp: timeStamp.Value,
+                                level: LogLevel.Information.ToShortString(),
+                                processId: CurrentProcessId,
+                                threadId: threadId.Value,
+                                intervalGraph: intervalTuple.Graph,
+                                interval: intervalTuple.Interval,
+                                caller: nameof(Console),
+                                message: logLine,
+                                exception: null,
+                                type: LogEntryType.ConsoleOut);
+                }
+                var parts = logLine.Split(splitChar);
 
                 if (parts.Length < 8)
                 {

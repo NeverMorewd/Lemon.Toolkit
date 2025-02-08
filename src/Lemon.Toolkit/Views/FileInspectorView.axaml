@@ -21,6 +21,10 @@
                 Text="{Binding FilePath}"
                 Watermark="Enter filepath or Select a file with the button 'Browse'" />
             <Button Command="{Binding BrowseFileCommand}" Content="Browse" />
+            <Button
+                Command="{Binding StartWatchingCommand}"
+                CommandParameter="{Binding FilePath}"
+                Content="Watch" />
             <TextBlock
                 VerticalAlignment="Center"
                 Foreground="Orange"
