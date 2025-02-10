@@ -46,7 +46,7 @@
     <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.2.0.1" />
     <PackageReference Include="Avalonia.Xaml.Interactivity" Version="11.2.0.1" />
     <PackageReference Include="Lemon.Hosting.AvaloniauiDesktop" Version="1.0.0" />
-    <PackageReference Include="Lemon.ModuleNavigation.Avaloniaui" Version="2.0.7-beta" />
+    <PackageReference Include="Lemon.ModuleNavigation.Avaloniaui" Version="2.0.8-beta" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.AI" Version="9.1.0-preview.1.25064.3" />
     <PackageReference Include="Microsoft.Extensions.AI.Ollama" Version="9.1.0-preview.1.25064.3" />
