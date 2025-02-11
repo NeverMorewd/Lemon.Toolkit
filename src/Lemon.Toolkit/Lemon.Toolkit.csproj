@@ -42,11 +42,14 @@
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.2" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.2" />
+    <PackageReference Include="Avalonia.HtmlRenderer" Version="11.0.0" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.2" />
     <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.2.0.1" />
     <PackageReference Include="Avalonia.Xaml.Interactivity" Version="11.2.0.1" />
     <PackageReference Include="Lemon.Hosting.AvaloniauiDesktop" Version="1.0.0" />
     <PackageReference Include="Lemon.ModuleNavigation.Avaloniaui" Version="2.0.8-beta" />
+    <PackageReference Include="Markdig" Version="0.40.0" />
+    <PackageReference Include="Markdig.SyntaxHighlighting" Version="1.1.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.AI" Version="9.1.0-preview.1.25064.3" />
     <PackageReference Include="Microsoft.Extensions.AI.Ollama" Version="9.1.0-preview.1.25064.3" />
@@ -60,6 +63,7 @@
     <PackageReference Include="Semi.Avalonia" Version="11.2.1.1" />
     <PackageReference Include="System.Text.Json" Version="9.0.1" />
     <PackageReference Include="TaskScheduler" Version="2.11.0" />
+    <PackageReference Include="WebStoating.Markdig.Prism" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>

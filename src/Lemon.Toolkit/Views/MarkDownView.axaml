@@ -1,0 +1,36 @@
+<UserControl
+    x:Class="Lemon.Toolkit.Views.MarkDownView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:av="clr-namespace:TheArtOfDev.HtmlRenderer.Avalonia;assembly=Avalonia.HtmlRenderer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Grid ColumnDefinitions="*,*">
+        <ScrollViewer Name="scrollViewer" Grid.Column="0" Height="400">
+            <av:HtmlPanel
+                x:Name="_htmlPanel"
+                Width="400"
+                Margin="10"
+                Background="MintCream"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <ToolTip.Tip>
+                    <ToolTip
+                        Padding="0"
+                        BorderBrush="Transparent"
+                        ShowDelay="5000">
+                        <av:HtmlLabel x:Name="_htmlTooltipLabel" />
+                    </ToolTip>
+                </ToolTip.Tip>
+            </av:HtmlPanel>
+        </ScrollViewer>
+        <av:HtmlLabel
+            x:Name="_htmlLabel"
+            Grid.Column="1"
+            Margin="10"
+            Background="MintCream" />
+    </Grid>
+</UserControl>

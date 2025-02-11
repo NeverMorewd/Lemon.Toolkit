@@ -9,7 +9,7 @@
     RequestedThemeVariant="Dark">
     <Application.Styles>
         <semi:SemiTheme Locale="zh-cn" />
-
+		<!--<SimpleTheme />-->
         <Style Selector="Button.Retro">
             <Setter Property="Background" Value="{DynamicResource RetroMainBackgroundBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource RetroRegularForegroundBrush}" />

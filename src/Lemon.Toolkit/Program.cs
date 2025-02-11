@@ -63,6 +63,7 @@ namespace Lemon.Toolkit
             hostBuilder.Services.AddAvaNavigationSupport();
             hostBuilder.Services.AddAvaDialogWindow<CRTWindow>(nameof(CRTWindow));
             // view
+            hostBuilder.Services.AddView<MarkDownView, MarkDownViewModel>(nameof(MarkDownView));
             hostBuilder.Services.AddView<PlaygroundRenderView, PlaygroundViewModel>(nameof(PlaygroundRenderView));
             hostBuilder.Services.AddView<LogDetailView, LogDetailViewModel>(nameof(LogDetailView));
             hostBuilder.Services.AddView<FileInspectorView, FileInspectorViewModel>(nameof(FileInspectorView));
