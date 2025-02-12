@@ -1,16 +1,12 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Threading;
-using TheArtOfDev.HtmlRenderer.Avalonia;
 using Lemon.ModuleNavigation.Abstracts;
 using Markdig;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Markdig.SyntaxHighlighting;
-using Markdig.Prism;
-using Avalonia;
-using Avalonia.VisualTree;
-using Avalonia.Controls.Primitives;
 
 namespace Lemon.Toolkit.Views;
 
